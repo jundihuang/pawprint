@@ -540,7 +540,7 @@ function renderGrid() {
   });
 }
 
-function openDoc(slug) {
+async function openDoc(slug) {
   const doc = docsData.find(d => d.slug === slug);
   if (!doc) return;
 
@@ -550,13 +550,18 @@ function openDoc(slug) {
     // Try remembered doc password first
     const remembered = loadPassword('doc_' + slug);
     if (remembered) {
-      fetchDoc(slug, remembered).catch(() => showAuth(doc));
-      return;
+      try {
+        await fetchDoc(slug, remembered);
+        return;
+      } catch {
+        // Remembered password expired/wrong, show auth modal
+        localStorage.removeItem('pp_doc_' + slug);
+      }
     }
     showAuth(doc);
   } else {
     // No password needed — open directly
-    fetchDoc(slug, null);
+    await fetchDoc(slug, null);
   }
 }
 
