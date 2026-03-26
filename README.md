@@ -160,6 +160,29 @@ Then add to your OpenClaw config:
 }
 ```
 
+## 💡 Why PawPrint?
+
+> Notion is a collaboration tool. Obsidian is a thinking tool. **PawPrint is a publishing tool** — and the only one AI agents can operate directly.
+
+### In the Age of AI Agents
+
+| | PawPrint | Notion | Obsidian |
+|--|---------|--------|----------|
+| **AI agent can publish** | ✅ `git push` | ❌ Complex block API | ⚠️ Local files, no sharing |
+| **Publish workflow** | .md + JSON + push | API → create page → insert blocks | Write file → manual share |
+| **Skill complexity** | ~10 lines bash | 200+ lines API calls | Depends on sync setup |
+| **Per-doc passwords** | ✅ Independent | ❌ On/off only | ❌ |
+| **Data ownership** | Your Git repo | Their servers | Local files |
+| **Custom domain & brand** | ✅ | ❌ notion.site | ✅ (Publish $8/mo) |
+| **Cost** | Free (Vercel) | Free limited, $10/mo+ | App free, Publish $8/mo |
+| **Load speed** | Pure static, instant | SPA, heavy | Publish is OK |
+
+### What PawPrint is NOT
+
+PawPrint doesn't replace Notion or Obsidian. It doesn't do real-time collaboration, databases, kanban boards, or bidirectional linking.
+
+**PawPrint is the publishing layer.** You think in Obsidian, collaborate in Notion — and when you need to securely share a result with the outside world, PawPrint is the simplest exit. Especially when an AI agent just finished a research report and can publish it with one command.
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: Pure HTML/CSS/JS + [marked.js](https://marked.js.org/) (zero build step)
