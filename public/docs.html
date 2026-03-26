@@ -1161,18 +1161,21 @@ async function renderDoc(data) {
   }
 
   // Dynamic watermark for protected docs
-  const existingWM = document.getElementById('doc-view').querySelector('.watermark-overlay');
+  let existingWM = document.querySelector('.watermark-overlay');
   if (existingWM) existingWM.remove();
   const docMeta = docsData.find(d => d.slug === currentSlug);
-  const isProtected = (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail || docMeta.requireNDA))
-    || data.encrypted || data.oneTimeView;
-  if (isProtected) {
+  const isProtected = data.encrypted || data.oneTimeView
+    || (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail || docMeta.requireNDA));
+  // Always show watermark on password-protected docs (even without docMeta)
+  const hasPassword = !docMeta && currentSlug; // direct access to locked doc means it passed password
+  if (isProtected || hasPassword) {
     const wmEmail = sessionStorage.getItem('pp_email_' + currentSlug) || '';
     const wmText = wmEmail || new Date().toISOString().slice(0, 16).replace('T', ' ');
     const wm = document.createElement('div');
     wm.className = 'watermark-overlay';
     wm.setAttribute('data-watermark', wmText);
-    document.getElementById('doc-view').appendChild(wm);
+    document.body.appendChild(wm);
+    console.log('[PawPrint] Watermark applied:', wmText);
   }
 
   // Render Lucide icons in doc view
@@ -1193,6 +1196,8 @@ async function renderDoc(data) {
 }
 
 function showList() {
+  const wm = document.querySelector('.watermark-overlay');
+  if (wm) wm.remove();
   document.getElementById('doc-view').style.display = 'none';
   // If we have doc list loaded, show it; otherwise show site gate
   if (docsData.length) {
