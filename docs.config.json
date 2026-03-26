@@ -1,0 +1,18 @@
+{
+  "site": {
+    "title": "ClawMe Docs",
+    "description": "内部文档分享平台"
+  },
+  "docs": [
+    {
+      "slug": "z1-research",
+      "title": "Z1 竞品调研报告",
+      "description": "Z1 (Zalify) 竞品深度分析 · ClawMe 视角",
+      "file": "docs/z1-research.md",
+      "password": "beansmile",
+      "icon": "📊",
+      "date": "2026-03-26",
+      "author": "Lisa (PM)"
+    }
+  ]
+}
