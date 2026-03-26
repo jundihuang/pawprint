@@ -439,6 +439,13 @@ async function trySiteUnlock(pwd, isManual) {
 
     renderGrid();
 
+    // Fetch view counts
+    try {
+      const vRes = await fetch('/api/views');
+      const vData = await vRes.json();
+      viewCounts = vData.views || {};
+    } catch {}
+
     document.getElementById('site-gate').style.display = 'none';
     document.getElementById('list-view').style.display = 'block';
 
@@ -490,6 +497,7 @@ function getRouteInfo() {
 
 let activeCategory = null;
 let searchQuery = '';
+let viewCounts = {};
 
 // ===== Search =====
 document.getElementById('search-input').addEventListener('input', (e) => {
@@ -600,6 +608,7 @@ function renderGrid() {
                 <div class="doc-meta-row">
                   ${d.author ? '<span>👤 ' + d.author + '</span>' : ''}
                   ${d.date ? '<span>📅 ' + d.date + '</span>' : ''}
+                  ${viewCounts[d.slug] ? '<span>👁 ' + viewCounts[d.slug] + '</span>' : ''}
                 </div>
               </div>
             </div>
@@ -744,8 +753,15 @@ function renderDoc(data) {
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
 
-  // Track doc view
+  // Track doc view (Vercel Analytics + KV counter)
   if (window.va) window.va('event', { name: 'doc_view', data: { slug: currentSlug, title: data.title } });
+  fetch('/api/views', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: currentSlug })
+  }).then(r => r.json()).then(d => {
+    if (d.views) viewCounts[currentSlug] = d.views;
+  }).catch(() => {});
 
   // Build TOC from headings
   buildTOC();
