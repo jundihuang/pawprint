@@ -94,12 +94,23 @@ Edit `docs.config.json`:
 
 ### 4. Deploy to Vercel
 
+**Option A: Auto-deploy via GitHub (recommended)**
+
+1. Push your repo to GitHub
+2. Go to [vercel.com/new](https://vercel.com/new)
+3. Click **"Import Git Repository"** → select your PawPrint repo
+4. Keep all defaults (no framework, no build command needed) → click **Deploy**
+5. Done. Every `git push` to `main` will auto-deploy
+
+**Option B: CLI deploy**
+
 ```bash
 npm i -g vercel
-vercel --prod
+vercel          # first time: links project
+vercel --prod   # deploy to production
 ```
 
-Or connect your GitHub repo to Vercel for auto-deploy on every push.
+> **Important**: If deploying via GitHub, make sure your git committer email matches a verified email on your GitHub account. Otherwise Vercel will reject the deployment.
 
 ### 5. Access
 
