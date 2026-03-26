@@ -37,3 +37,4 @@ jobs:
           destination-repository-name: pawprint
           target-branch: main
           commit-message: "sync: ${{ github.event.head_commit.message }}"
+          force: true
