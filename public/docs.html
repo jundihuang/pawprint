@@ -185,6 +185,18 @@
     color: var(--muted); font-size: 14px;
   }
 
+  /* ===== Search ===== */
+  .search-bar { margin-bottom: 16px; }
+  .search-bar input {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; outline: none;
+    background: var(--card); color: var(--text);
+    transition: border-color .2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+
   /* ===== Category Tabs ===== */
   .category-tabs {
     display: flex; flex-wrap: wrap; gap: 8px;
@@ -266,6 +278,9 @@
     <div class="site-header">
       <h1 id="site-title">📚 Docs</h1>
       <p id="site-desc"></p>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="🔍 Search docs..." autocomplete="off">
     </div>
     <div class="doc-grid" id="doc-grid">
       <div class="loading">Loading...</div>
@@ -391,6 +406,13 @@ function getRouteInfo() {
 }
 
 let activeCategory = null;
+let searchQuery = '';
+
+// ===== Search =====
+document.getElementById('search-input').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  renderGrid();
+});
 
 // ===== Init: try remembered password first =====
 async function init() {
@@ -420,15 +442,28 @@ function renderGrid() {
     return;
   }
 
-  // Filter by active category if set
-  const filteredDocs = activeCategory
+  // Filter by category + search
+  let filteredDocs = activeCategory
     ? docsData.filter(d => (d.category || 'resources') === activeCategory)
     : docsData;
 
-  // Render category tabs
-  let tabsHtml = '<div class="category-tabs"><a href="/docs" class="cat-tab' + (!activeCategory ? ' active' : '') + '">All</a>';
+  if (searchQuery) {
+    filteredDocs = filteredDocs.filter(d =>
+      (d.title || '').toLowerCase().includes(searchQuery) ||
+      (d.description || '').toLowerCase().includes(searchQuery) ||
+      (d.author || '').toLowerCase().includes(searchQuery) ||
+      (d.slug || '').toLowerCase().includes(searchQuery)
+    );
+  }
+
+  // Render category tabs (counts based on search-filtered data)
+  const searchFiltered = searchQuery
+    ? docsData.filter(d => (d.title||'').toLowerCase().includes(searchQuery) || (d.description||'').toLowerCase().includes(searchQuery) || (d.author||'').toLowerCase().includes(searchQuery) || (d.slug||'').toLowerCase().includes(searchQuery))
+    : docsData;
+
+  let tabsHtml = '<div class="category-tabs"><a href="/docs" class="cat-tab' + (!activeCategory ? ' active' : '') + '">All <span class="cat-count">' + searchFiltered.length + '</span></a>';
   categoriesData.forEach(c => {
-    const count = docsData.filter(d => (d.category || 'resources') === c.id).length;
+    const count = searchFiltered.filter(d => (d.category || 'resources') === c.id).length;
     if (count > 0) {
       tabsHtml += '<a href="/docs/' + c.id + '" class="cat-tab' + (activeCategory === c.id ? ' active' : '') + '">' + c.icon + ' ' + c.label + ' <span class="cat-count">' + count + '</span></a>';
     }
