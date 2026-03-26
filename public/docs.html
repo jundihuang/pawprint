@@ -283,15 +283,34 @@
 let currentSlug = null;
 let docsData = [];
 let sitePassword = '';
-const sessionPasswords = {};
 
-// Site Gate
+// ===== Password Memory (localStorage) =====
+const SITE_TTL = 3 * 24 * 60 * 60 * 1000;  // 3 days
+const DOC_TTL  = 1 * 24 * 60 * 60 * 1000;  // 1 day
+
+function savePassword(key, pwd, ttl) {
+  localStorage.setItem('pp_' + key, JSON.stringify({ pwd, exp: Date.now() + ttl }));
+}
+function loadPassword(key) {
+  try {
+    const raw = localStorage.getItem('pp_' + key);
+    if (!raw) return null;
+    const { pwd, exp } = JSON.parse(raw);
+    if (Date.now() > exp) { localStorage.removeItem('pp_' + key); return null; }
+    return pwd;
+  } catch { return null; }
+}
+
+// ===== Site Gate =====
 document.getElementById('site-gate-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const pwd = document.getElementById('site-gate-pwd').value;
+  await trySiteUnlock(pwd, true);
+});
+
+async function trySiteUnlock(pwd, isManual) {
   const btn = document.getElementById('site-gate-btn');
-  btn.disabled = true;
-  btn.textContent = 'Verifying...';
+  if (isManual) { btn.disabled = true; btn.textContent = 'Verifying...'; }
 
   try {
     const res = await fetch('/api/docs', {
@@ -305,6 +324,9 @@ document.getElementById('site-gate-form').addEventListener('submit', async (e) =
     docsData = data.docs;
     categoriesData = data.categories || [];
 
+    // Remember site password for 3 days
+    savePassword('site', pwd, SITE_TTL);
+
     document.getElementById('site-title').textContent = '🐾 ' + (data.site?.title || 'Docs');
     document.getElementById('site-desc').textContent = data.site?.description || '';
     document.title = data.site?.title || 'Docs';
@@ -314,25 +336,31 @@ document.getElementById('site-gate-form').addEventListener('submit', async (e) =
     document.getElementById('site-gate').style.display = 'none';
     document.getElementById('list-view').style.display = 'block';
 
-    // Check hash for direct doc link
     const hash = location.hash.slice(1);
     if (hash) {
       const doc = docsData.find(d => d.slug === hash);
       if (doc) openDoc(doc.slug);
     }
+    return true;
   } catch {
-    document.getElementById('site-gate-error').style.display = 'block';
-    document.getElementById('site-gate-pwd').value = '';
-    document.getElementById('site-gate-pwd').focus();
+    if (isManual) {
+      document.getElementById('site-gate-error').style.display = 'block';
+      document.getElementById('site-gate-pwd').value = '';
+      document.getElementById('site-gate-pwd').focus();
+    }
+    return false;
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Unlock';
+    if (isManual) { btn.disabled = false; btn.textContent = 'Unlock'; }
   }
-});
+}
 
-// Init — no longer auto-loads
+// ===== Init: try remembered password first =====
 async function init() {
-  // Focus the site gate password input
+  const remembered = loadPassword('site');
+  if (remembered) {
+    const ok = await trySiteUnlock(remembered, false);
+    if (ok) return;
+  }
   document.getElementById('site-gate-pwd').focus();
 }
 
@@ -404,10 +432,16 @@ function openDoc(slug) {
 
   currentSlug = slug;
 
-  if (doc.locked && !sessionPasswords[slug]) {
+  if (doc.locked) {
+    // Try remembered doc password first
+    const remembered = loadPassword('doc_' + slug);
+    if (remembered) {
+      fetchDoc(slug, remembered).catch(() => showAuth(doc));
+      return;
+    }
     showAuth(doc);
   } else {
-    fetchDoc(slug, sessionPasswords[slug] || '');
+    fetchDoc(slug, '');
   }
 }
 
@@ -433,7 +467,7 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
 
   try {
     await fetchDoc(currentSlug, pwd);
-    sessionPasswords[currentSlug] = pwd;
+    savePassword('doc_' + currentSlug, pwd, DOC_TTL);
     closeAuth();
   } catch {
     document.getElementById('auth-error').style.display = 'block';
