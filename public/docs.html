@@ -342,7 +342,7 @@
     content: attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark);
     position: absolute; inset: -50%;
     font-size: 14px; font-weight: 500;
-    color: rgba(128,128,128,0.06);
+    color: rgba(128,128,128,0.08);
     transform: rotate(-30deg);
     white-space: pre-wrap; word-break: break-all;
     line-height: 4; letter-spacing: 6px;
@@ -1161,9 +1161,11 @@ async function renderDoc(data) {
   const existingWM = docBody.parentElement.querySelector('.watermark-overlay');
   if (existingWM) existingWM.remove();
   const docMeta = docsData.find(d => d.slug === currentSlug);
-  if (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail)) {
+  const isProtected = (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail || docMeta.requireNDA))
+    || data.encrypted;
+  if (isProtected) {
     const wmEmail = sessionStorage.getItem('pp_email_' + currentSlug) || '';
-    const wmText = wmEmail || new Date().toISOString().slice(0, 10);
+    const wmText = wmEmail || new Date().toISOString().slice(0, 16).replace('T', ' ');
     const wm = document.createElement('div');
     wm.className = 'watermark-overlay';
     wm.setAttribute('data-watermark', wmText);
