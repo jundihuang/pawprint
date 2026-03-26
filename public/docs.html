@@ -632,7 +632,12 @@ function renderDoc(data) {
 
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
-  location.hash = currentSlug;
+
+  // Use pushState instead of location.hash to avoid triggering popstate
+  const docPath = activeCategory
+    ? '/docs/' + activeCategory + '/' + currentSlug
+    : '/docs#' + currentSlug;
+  window.history.pushState({ viewing: currentSlug }, '', docPath);
   window.scrollTo(0, 0);
 }
 
@@ -646,15 +651,30 @@ function showList() {
 }
 
 // Handle back/forward navigation
-window.addEventListener('popstate', () => {
+window.addEventListener('popstate', (e) => {
+  // If state says we're viewing a doc, stay on doc view
+  if (e.state && e.state.viewing) return;
+
   const route = getRouteInfo();
   activeCategory = route.category;
-  if (route.slug) {
+
+  // Check hash for legacy direct links
+  const hash = location.hash.slice(1);
+  if (hash && docsData.length) {
+    const doc = docsData.find(d => d.slug === hash);
+    if (doc) { openDoc(doc.slug); return; }
+  }
+
+  if (route.slug && docsData.length) {
     const doc = docsData.find(d => d.slug === route.slug);
-    if (doc) openDoc(doc.slug);
-  } else if (docsData.length) {
+    if (doc) { openDoc(doc.slug); return; }
+  }
+
+  // Back to list
+  if (docsData.length) {
     document.getElementById('doc-view').style.display = 'none';
     document.getElementById('list-view').style.display = 'block';
+    currentSlug = null;
     renderGrid();
   }
 });
