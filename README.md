@@ -1,43 +1,177 @@
-# ClawMe Docs
+# 🐾 PawPrint
 
-轻量私密文档分享平台。
+**Leave your mark.** — Private docs, public simplicity.
 
-## 使用方法
+PawPrint is a lightweight, zero-database document sharing platform. Write in Markdown, set a password, push to Git — done.
 
-### 添加新文档
+🔗 **Demo**: [pawprint-jayce.vercel.app](https://pawprint-jayce.vercel.app)
 
-1. 将 `.md` 文件放入 `docs/` 目录
-2. 在 `docs.config.json` 中添加配置：
+---
+
+## ✨ Features
+
+- **📝 Markdown First** — Tables, code blocks, quotes, images — all render beautifully
+- **🔒 Two-Layer Passwords** — Site-level gate + per-document passwords, all verified server-side
+- **🔗 Direct Links** — Share any doc with a clean `#slug` URL
+- **🚀 Git Push to Deploy** — Manage docs in Git, Vercel auto-deploys on push
+- **💾 Zero Database** — Pure static files + serverless functions
+- **📂 PARA Organization** — Docs organized by Projects, Areas, Resources, Archives
+- **🧠 Password Memory** — Site password remembered 3 days, doc passwords 1 day (localStorage)
+- **🆓 Free Forever** — Runs on Vercel's free tier, open source, self-hostable
+
+## 🗂️ Project Structure
+
+```
+pawprint/
+├── public/
+│   ├── index.html        # Landing page (dark theme, parallax)
+│   └── docs.html         # Doc browser (password-gated)
+├── api/
+│   ├── docs.js           # Doc list API (POST, site password required)
+│   └── auth.js           # Doc content API (POST, per-doc password)
+├── docs/                  # Your Markdown documents
+│   ├── projects/          # Time-bound deliverables
+│   ├── areas/             # Ongoing responsibilities
+│   ├── resources/         # Reference materials
+│   └── archives/          # Completed or inactive
+├── skills/
+│   └── pawprint-publish/  # OpenClaw AI agent skill for auto-publishing
+├── docs.config.json       # Site config + document registry
+├── vercel.json            # Vercel routing config
+└── package.json
+```
+
+## 🚀 Quick Start
+
+### 1. Clone & Configure
+
+```bash
+git clone https://github.com/user/pawprint.git
+cd pawprint
+```
+
+### 2. Add Your First Document
+
+Create a Markdown file in the appropriate category:
+
+```bash
+echo "# Hello World\n\nMy first private doc." > docs/projects/hello.md
+```
+
+### 3. Register in Config
+
+Edit `docs.config.json`:
 
 ```json
 {
-  "slug": "my-doc",
-  "title": "文档标题",
-  "description": "简短描述",
-  "file": "docs/my-doc.md",
-  "password": "可选密码，不设则公开",
-  "icon": "📄",
-  "date": "2026-03-26",
-  "author": "作者"
+  "site": {
+    "title": "My Docs",
+    "description": "Private knowledge base",
+    "password": "your-site-password"
+  },
+  "categories": [
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
+  ],
+  "docs": [
+    {
+      "slug": "hello",
+      "category": "projects",
+      "title": "Hello World",
+      "description": "My first doc",
+      "file": "docs/projects/hello.md",
+      "icon": "👋",
+      "date": "2026-01-01",
+      "author": "You"
+    }
+  ]
 }
 ```
 
-3. Git push → Vercel 自动部署
+> **Password field is optional.** Omit it for public docs, or add `"password": "secret"` to lock individual docs.
 
-### 访问文档
+### 4. Deploy to Vercel
 
-- 文档列表：`https://your-domain.vercel.app`
-- 直链某篇：`https://your-domain.vercel.app#slug`
+```bash
+npm i -g vercel
+vercel --prod
+```
 
-### 密码说明
+Or connect your GitHub repo to Vercel for auto-deploy on every push.
 
-- 每篇文档可独立设密码
-- 不设 `password` 字段则公开访问
-- 密码验证走 Serverless Function，不暴露在前端
+### 5. Access
 
-## 技术栈
+- **Home**: `https://your-app.vercel.app` — Landing page
+- **Docs**: `https://your-app.vercel.app/docs` — Password-protected doc browser
+- **Direct link**: `https://your-app.vercel.app/docs#hello` — Jump to a specific doc
 
-- 前端：纯 HTML/CSS/JS + marked.js
-- 后端：Vercel Serverless Functions (Node.js)
-- 部署：Vercel
-- 文档管理：Git
+## 📂 PARA Method
+
+PawPrint uses the [PARA method](https://fortelabs.com/blog/para/) for organizing documents:
+
+| Category | Folder | Use for |
+|----------|--------|---------|
+| 📂 Projects | `docs/projects/` | Time-bound deliverables (research, proposals, PRDs) |
+| 📖 Areas | `docs/areas/` | Ongoing responsibilities (playbooks, processes) |
+| 📚 Resources | `docs/resources/` | Reference material (guides, notes, collections) |
+| 📦 Archives | `docs/archives/` | Completed or inactive content |
+
+## 🔐 Security Model
+
+| Layer | Scope | Verified | Memory |
+|-------|-------|----------|--------|
+| Site password | Entire `/docs` | Server-side (POST `/api/docs`) | 3 days (localStorage) |
+| Doc password | Individual doc | Server-side (POST `/api/auth`) | 1 day (localStorage) |
+
+- Passwords are **never exposed** in client-side JavaScript
+- API requires POST method — no accidental GET leaks
+- No cookies, no sessions, no tracking
+
+## 🤖 AI Agent Integration (OpenClaw)
+
+PawPrint includes an [OpenClaw](https://github.com/openclaw/openclaw) skill for AI-powered publishing. Any agent can publish docs to PawPrint with natural language:
+
+> "Publish this research report to PawPrint under Projects"
+
+The skill is located at `skills/pawprint-publish/` and includes:
+- `SKILL.md` — Agent instructions
+- `scripts/publish.sh` — One-command publish script
+- `references/config-schema.md` — Config file reference
+
+### Install the Skill
+
+Copy the skill folder to your OpenClaw shared skills directory:
+
+```bash
+cp -r skills/pawprint-publish ~/.openclaw/skills/shared/
+```
+
+Then add to your OpenClaw config:
+
+```json
+{
+  "skills": {
+    "load": {
+      "extraDirs": ["~/.openclaw/skills/shared"]
+    }
+  }
+}
+```
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Pure HTML/CSS/JS + [marked.js](https://marked.js.org/) (zero build step)
+- **Backend**: Vercel Serverless Functions (Node.js)
+- **Fonts**: [Inter](https://rsms.me/inter/) + [Instrument Serif](https://fonts.google.com/specimen/Instrument+Serif)
+- **Deploy**: [Vercel](https://vercel.com) (free tier)
+- **Docs**: Git-managed Markdown files
+
+## 📄 License
+
+MIT
+
+---
+
+**PawPrint** 🐾 — Leave your mark.
