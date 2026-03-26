@@ -236,7 +236,7 @@
   .theme-toggle:hover { background: var(--hover); }
 
   /* ===== Search ===== */
-  .search-bar { margin-bottom: 16px; }
+  .search-bar { margin-bottom: 16px; position: relative; }
   .search-bar input {
     width: 100%; padding: 10px 14px;
     border: 1px solid var(--border); border-radius: 10px;
@@ -306,7 +306,7 @@
 <div id="site-gate">
   <div class="container" style="display:flex;align-items:center;justify-content:center;min-height:80vh;">
     <div style="width:380px;">
-      <h1 style="font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;">🐾 PawPrint</h1>
+      <h1 style="font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><i data-lucide="paw-print" style="width:24px;height:24px;"></i> PawPrint</h1>
       <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">Enter the site password to browse docs.</p>
       <form id="site-gate-form">
         <input type="password" id="site-gate-pwd" placeholder="Site password" autocomplete="off" autofocus
@@ -327,13 +327,14 @@
   <div class="container">
     <div class="site-header">
       <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
-        <h1 id="site-title">📚 Docs</h1>
-        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
+        <h1 id="site-title" style="display:flex;align-items:center;gap:8px;"><i data-lucide="library" style="width:22px;height:22px;"></i> Docs</h1>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme"><i data-lucide="moon" id="theme-icon" style="width:16px;height:16px;"></i></button>
       </div>
       <p id="site-desc"></p>
     </div>
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="🔍 Search docs..." autocomplete="off">
+      <input type="text" id="search-input" placeholder="Search docs..." autocomplete="off" style="padding-left:36px;">
+      <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;"></i>
     </div>
     <div class="doc-grid" id="doc-grid">
       <div class="loading">Loading...</div>
@@ -344,7 +345,7 @@
 <!-- Auth Modal (per-doc) -->
 <div class="modal-overlay" id="auth-modal">
   <div class="modal">
-    <h2>🔒 Document Locked</h2>
+    <h2 style="display:flex;align-items:center;gap:8px;"><i data-lucide="lock" style="width:18px;height:18px;"></i> Document Locked</h2>
     <p class="subtitle" id="auth-doc-title"></p>
     <form id="auth-form">
       <input type="password" id="auth-pwd" placeholder="Enter document password" autocomplete="off" autofocus>
@@ -369,7 +370,7 @@
           </div>
         </div>
         <div class="md-body" id="doc-content"></div>
-        <div class="doc-footer">PawPrint 🐾 — <a href="/" style="color:var(--accent);text-decoration:none;">Home</a></div>
+        <div class="doc-footer" style="display:flex;align-items:center;justify-content:center;gap:6px;">PawPrint <i data-lucide="paw-print" style="width:14px;height:14px;"></i> — <a href="/" style="color:var(--accent);text-decoration:none;">Home</a></div>
       </div>
     </div>
     <aside class="toc-sidebar" id="toc-sidebar">
@@ -380,6 +381,8 @@
 </div>
 
 <!-- Markdown parser (marked.js CDN) -->
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <!-- Vercel Web Analytics -->
 <script defer src="/_vercel/insights/script.js"></script>
 <!-- Vercel Speed Insights -->
@@ -433,7 +436,7 @@ async function trySiteUnlock(pwd, isManual) {
     // Remember site password for 3 days
     savePassword('site', pwd, SITE_TTL);
 
-    document.getElementById('site-title').textContent = '🐾 ' + (data.site?.title || 'Docs');
+    document.getElementById('site-title').innerHTML = '<i data-lucide="library" style="width:22px;height:22px;"></i> ' + (data.site?.title || 'Docs');
     document.getElementById('site-desc').textContent = data.site?.description || '';
     document.title = data.site?.title || 'Docs';
 
@@ -473,7 +476,9 @@ async function trySiteUnlock(pwd, isManual) {
   if (saved) document.documentElement.setAttribute('data-theme', saved);
   const btn = document.getElementById('theme-toggle');
   function updateIcon() {
-    btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '" style="width:16px;height:16px;"></i>';
+    if (window.lucide) lucide.createIcons();
   }
   updateIcon();
   btn.addEventListener('click', () => {
@@ -601,14 +606,14 @@ function renderGrid() {
               <div class="doc-info">
                 <h3>
                   ${d.title}
-                  ${d.locked ? '<span class="badge badge-lock">🔒</span>' : ''}
-                  ${d.burn ? '<span class="badge badge-burn">🔥</span>' : ''}
+                  ${d.locked ? '<span class="badge badge-lock"><i data-lucide="lock" style="width:12px;height:12px;"></i></span>' : ''}
+                  ${d.burn ? '<span class="badge badge-burn"><i data-lucide="flame" style="width:12px;height:12px;"></i></span>' : ''}
                 </h3>
                 <p>${d.description || ''}</p>
                 <div class="doc-meta-row">
-                  ${d.author ? '<span>👤 ' + d.author + '</span>' : ''}
-                  ${d.date ? '<span>📅 ' + d.date + '</span>' : ''}
-                  ${viewCounts[d.slug] ? '<span>👁 ' + viewCounts[d.slug] + '</span>' : ''}
+                  ${d.author ? '<span style="display:inline-flex;align-items:center;gap:3px;"><i data-lucide="user" style="width:12px;height:12px;"></i> ' + d.author + '</span>' : ''}
+                  ${d.date ? '<span style="display:inline-flex;align-items:center;gap:3px;"><i data-lucide="calendar" style="width:12px;height:12px;"></i> ' + d.date + '</span>' : ''}
+                  ${viewCounts[d.slug] ? '<span style="display:inline-flex;align-items:center;gap:3px;"><i data-lucide="eye" style="width:12px;height:12px;"></i> ' + viewCounts[d.slug] + '</span>' : ''}
                 </div>
               </div>
             </div>
@@ -619,6 +624,9 @@ function renderGrid() {
   });
 
   grid.innerHTML = tabsHtml + html;
+
+  // Render Lucide icons
+  if (window.lucide) lucide.createIcons();
 
   // Handle tab clicks with SPA navigation
   grid.querySelectorAll('.cat-tab').forEach(tab => {
@@ -684,7 +692,7 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
     closeAuth();
   } catch (err) {
     const errEl = document.getElementById('auth-error');
-    errEl.textContent = err.status === 410 ? '🔥 This document has expired'
+    errEl.textContent = err.status === 410 ? 'This document has expired'
       : err.status === 500 ? 'Server error — file may be missing'
       : 'Wrong password, try again';
     errEl.style.display = 'block';
@@ -718,8 +726,8 @@ async function fetchDoc(slug, password) {
 
 function renderDoc(data) {
   document.getElementById('doc-title').textContent = data.title;
-  document.getElementById('doc-author').textContent = data.author ? '👤 ' + data.author : '';
-  document.getElementById('doc-date').textContent = data.date ? '📅 ' + data.date : '';
+  document.getElementById('doc-author').innerHTML = data.author ? '<i data-lucide="user" style="width:14px;height:14px;vertical-align:-2px;"></i> ' + data.author : '';
+  document.getElementById('doc-date').innerHTML = data.date ? '<i data-lucide="calendar" style="width:14px;height:14px;vertical-align:-2px;"></i> ' + data.date : '';
 
   // Parse markdown
   const html = marked.parse(data.content);
@@ -762,6 +770,9 @@ function renderDoc(data) {
   }).then(r => r.json()).then(d => {
     if (d.views) viewCounts[currentSlug] = d.views;
   }).catch(() => {});
+
+  // Render Lucide icons in doc view
+  if (window.lucide) lucide.createIcons();
 
   // Build TOC from headings
   buildTOC();
@@ -864,7 +875,8 @@ function buildTOC() {
   updateActiveTOC();
 }
 
-init();
+init().then(() => { if (window.lucide) lucide.createIcons(); });
+document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
 </script>
 </body>
 </html>
