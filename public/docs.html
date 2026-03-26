@@ -470,8 +470,10 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
     await fetchDoc(currentSlug, pwd);
     savePassword('doc_' + currentSlug, pwd, DOC_TTL);
     closeAuth();
-  } catch {
-    document.getElementById('auth-error').style.display = 'block';
+  } catch (err) {
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = err.status === 500 ? 'Server error — file may be missing' : 'Wrong password, try again';
+    errEl.style.display = 'block';
     document.getElementById('auth-pwd').value = '';
     document.getElementById('auth-pwd').focus();
   } finally {
@@ -489,7 +491,12 @@ async function fetchDoc(slug, password) {
     body: JSON.stringify(body)
   });
 
-  if (!res.ok) throw new Error('Auth failed');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const e = new Error(err.error || 'Auth failed');
+    e.status = res.status;
+    throw e;
+  }
 
   const data = await res.json();
   renderDoc(data);
