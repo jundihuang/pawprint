@@ -631,11 +631,26 @@ function renderDoc(data) {
   document.getElementById('doc-content').innerHTML = html;
 
   // Fix anchor links — scroll within doc instead of changing URL
-  document.getElementById('doc-content').querySelectorAll('a[href^="#"]').forEach(a => {
+  const docBody = document.getElementById('doc-content');
+  docBody.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
-      const id = decodeURIComponent(a.getAttribute('href').slice(1));
-      const target = document.getElementById(id);
+      const rawHref = a.getAttribute('href').slice(1);
+      const decoded = decodeURIComponent(rawHref);
+      // Try multiple ways to find the target
+      let target = document.getElementById(decoded)
+        || document.getElementById(rawHref)
+        || docBody.querySelector('[id="' + CSS.escape(decoded) + '"]')
+        || docBody.querySelector('[id="' + CSS.escape(rawHref) + '"]');
+      // Fallback: find heading whose id contains the text
+      if (!target) {
+        const headings = docBody.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        const search = decoded.replace(/^\d+[-.]?\s*/, '').toLowerCase();
+        for (const h of headings) {
+          if (h.id && h.id.toLowerCase().includes(search)) { target = h; break; }
+          if (h.textContent.toLowerCase().includes(search)) { target = h; break; }
+        }
+      }
       if (target) target.scrollIntoView({ behavior: 'smooth' });
     });
   });
