@@ -377,6 +377,20 @@
   </div>
 </div>
 
+<!-- E2E Key Modal -->
+<div class="modal-overlay" id="e2e-modal">
+  <div class="modal">
+    <h2 style="display:flex;align-items:center;gap:8px;"><i data-lucide="shield-check" style="width:18px;height:18px;"></i> End-to-End Encrypted</h2>
+    <p class="subtitle">This document is encrypted. Enter the decryption key to view.</p>
+    <form id="e2e-form">
+      <input type="password" id="e2e-key-input" placeholder="Decryption key" autocomplete="off" autofocus>
+      <button type="submit" id="e2e-btn">Decrypt</button>
+      <button type="button" class="cancel" onclick="closeE2E()">Cancel</button>
+      <div class="error" id="e2e-error">Wrong key — could not decrypt</div>
+    </form>
+  </div>
+</div>
+
 <!-- Doc View -->
 <div id="doc-view">
   <div class="doc-layout">
@@ -798,29 +812,61 @@ async function fetchDoc(slug, password) {
   renderDoc(data);
 }
 
+let pendingE2EData = null;
+let e2eResolve = null;
+
+function showE2EModal() {
+  document.getElementById('e2e-key-input').value = '';
+  document.getElementById('e2e-error').style.display = 'none';
+  document.getElementById('e2e-modal').classList.add('active');
+  setTimeout(() => document.getElementById('e2e-key-input').focus(), 100);
+}
+function closeE2E() {
+  document.getElementById('e2e-modal').classList.remove('active');
+  pendingE2EData = null;
+  if (e2eResolve) { e2eResolve(false); e2eResolve = null; }
+}
+
+document.getElementById('e2e-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const key = document.getElementById('e2e-key-input').value;
+  const btn = document.getElementById('e2e-btn');
+  btn.disabled = true;
+  btn.textContent = 'Decrypting...';
+  try {
+    pendingE2EData.content = await E2E.decrypt(pendingE2EData.content, key);
+    document.getElementById('e2e-modal').classList.remove('active');
+    if (e2eResolve) { e2eResolve(true); e2eResolve = null; }
+  } catch {
+    document.getElementById('e2e-error').style.display = 'block';
+    document.getElementById('e2e-key-input').value = '';
+    document.getElementById('e2e-key-input').focus();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Decrypt';
+  }
+});
+
 async function renderDoc(data) {
   // If encrypted, decrypt content client-side
   if (data.encrypted && data.content) {
-    // Get decryption key from URL fragment: #key=xxx or from prompt
-    let e2eKey = null;
+    // Try key from URL fragment first: #key=xxx
     const hashParams = new URLSearchParams(location.hash.slice(1));
-    e2eKey = hashParams.get('key');
-    if (!e2eKey) {
-      e2eKey = prompt('This document is end-to-end encrypted.\nEnter the decryption key:');
-    }
-    if (!e2eKey) {
-      document.getElementById('doc-content').innerHTML = '<p style="color:var(--red);">Decryption key required to view this document.</p>';
-      document.getElementById('list-view').style.display = 'none';
-      document.getElementById('doc-view').style.display = 'block';
-      return;
-    }
-    try {
-      data.content = await E2E.decrypt(data.content, e2eKey);
-    } catch {
-      document.getElementById('doc-content').innerHTML = '<p style="color:var(--red);">Failed to decrypt. Wrong key?</p>';
-      document.getElementById('list-view').style.display = 'none';
-      document.getElementById('doc-view').style.display = 'block';
-      return;
+    const urlKey = hashParams.get('key');
+    if (urlKey) {
+      try {
+        data.content = await E2E.decrypt(data.content, urlKey);
+      } catch {
+        // URL key failed, show modal
+        pendingE2EData = data;
+        const ok = await new Promise(r => { e2eResolve = r; showE2EModal(); });
+        if (!ok) return;
+      }
+    } else {
+      // No URL key, show modal
+      pendingE2EData = data;
+      const ok = await new Promise(r => { e2eResolve = r; showE2EModal(); });
+      if (!ok) return;
     }
   }
 
