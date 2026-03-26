@@ -384,6 +384,9 @@
           <div class="meta">
             <span id="doc-author"></span>
             <span id="doc-date"></span>
+            <button class="pdf-btn" id="md-btn" onclick="exportMD()" title="Download as Markdown">
+              <i data-lucide="file-text" style="width:14px;height:14px;"></i> MD
+            </button>
             <button class="pdf-btn" id="pdf-btn" onclick="exportPDF()" title="Download as PDF">
               <i data-lucide="download" style="width:14px;height:14px;"></i> PDF
             </button>
@@ -743,6 +746,7 @@ async function fetchDoc(slug, password) {
   }
 
   const data = await res.json();
+  lastDocRaw = data;
   renderDoc(data);
 }
 
@@ -895,6 +899,21 @@ function buildTOC() {
     if (!ticking) { ticking = true; requestAnimationFrame(updateActiveTOC); }
   }, { passive: true });
   updateActiveTOC();
+}
+
+let lastDocRaw = null;
+
+// ===== Markdown Export =====
+function exportMD() {
+  if (!lastDocRaw || !lastDocRaw.content) return;
+  const title = (lastDocRaw.title || 'document').replace(/[^a-zA-Z0-9\u4e00-\u9fff-_ ]/g, '').trim();
+  const blob = new Blob([lastDocRaw.content], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = title + '.md';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ===== PDF Export =====
