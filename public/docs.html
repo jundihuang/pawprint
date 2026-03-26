@@ -540,17 +540,49 @@ document.getElementById('search-input').addEventListener('input', (e) => {
   renderGrid();
 });
 
-// ===== Init: try remembered password first =====
+// ===== Direct doc access (bypass site gate for non-password docs) =====
+async function tryDirectAccess(slug) {
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      lastDocRaw = data;
+      currentSlug = slug;
+      document.getElementById('site-gate').style.display = 'none';
+      document.getElementById('list-view').style.display = 'none';
+      document.getElementById('doc-view').style.display = 'block';
+      renderDoc(data);
+      return true;
+    }
+    // 401 = needs password, fall through to gate
+    return false;
+  } catch { return false; }
+}
+
+// ===== Init: try direct access first, then site gate =====
 async function init() {
   const route = getRouteInfo();
   activeCategory = route.category;
 
+  // Check for direct doc link (hash or path slug)
+  const directSlug = route.slug || location.hash.slice(1);
+  if (directSlug) {
+    const ok = await tryDirectAccess(directSlug);
+    if (ok) return;
+    // Doc needs password — need site unlock first to know if it's doc-locked or site-locked
+  }
+
+  // Try remembered site password
   const remembered = loadPassword('site');
   if (remembered) {
     const ok = await trySiteUnlock(remembered, false);
     if (ok) {
-      if (route.slug) {
-        const doc = docsData.find(d => d.slug === route.slug);
+      if (directSlug) {
+        const doc = docsData.find(d => d.slug === directSlug);
         if (doc) openDoc(doc.slug);
       }
       return;
@@ -818,11 +850,18 @@ function renderDoc(data) {
 
 function showList() {
   document.getElementById('doc-view').style.display = 'none';
-  document.getElementById('list-view').style.display = 'block';
+  // If we have doc list loaded, show it; otherwise show site gate
+  if (docsData.length) {
+    document.getElementById('list-view').style.display = 'block';
+    document.getElementById('site-gate').style.display = 'none';
+  } else {
+    document.getElementById('site-gate').style.display = 'block';
+    document.getElementById('list-view').style.display = 'none';
+  }
   const backPath = activeCategory ? '/docs/' + activeCategory : '/docs';
   window.history.pushState({}, '', backPath);
   currentSlug = null;
-  renderGrid();
+  if (docsData.length) renderGrid();
 }
 
 // Handle back/forward navigation
