@@ -1,0 +1,46 @@
+{
+  "site": {
+    "title": "PawPrint Docs",
+    "description": "Private docs, public simplicity.",
+    "password": "demo"
+  },
+  "categories": [
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
+  ],
+  "docs": [
+    {
+      "slug": "welcome",
+      "category": "resources",
+      "title": "Welcome to PawPrint",
+      "description": "Everything you need to know to get started",
+      "file": "docs/resources/welcome.md",
+      "icon": "👋",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    },
+    {
+      "slug": "features-demo",
+      "category": "resources",
+      "title": "Feature Demo",
+      "description": "Syntax highlighting, Mermaid diagrams, and more",
+      "file": "docs/resources/features-demo.md",
+      "icon": "🎨",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    },
+    {
+      "slug": "secret-example",
+      "category": "projects",
+      "title": "Password Protected Example",
+      "description": "Try password: secret123",
+      "file": "docs/projects/secret-example.md",
+      "password": "secret123",
+      "icon": "🔒",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    }
+  ]
+}

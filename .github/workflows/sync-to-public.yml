@@ -1,0 +1,39 @@
+name: Sync to Public Repo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clean private content
+        run: |
+          # Remove private docs
+          rm -rf docs/projects/* docs/areas/* docs/resources/* docs/archives/*
+          rm -f docs.config.json
+          rm -rf .vercel
+
+          # Copy example content
+          cp .github/public-template/docs.config.json docs.config.json
+          cp -r .github/public-template/docs/* docs/
+
+          # Remove the sync workflow itself and templates from public repo
+          rm -rf .github
+
+      - name: Push to public repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.PUBLIC_REPO_DEPLOY_KEY }}
+        with:
+          source-directory: .
+          destination-github-username: jundihuang
+          destination-repository-name: pawprint
+          target-branch: main
+          commit-message: "sync: ${{ github.event.head_commit.message }}"
