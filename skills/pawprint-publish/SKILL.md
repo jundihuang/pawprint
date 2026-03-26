@@ -65,11 +65,34 @@ Show a summary and ask for confirmation:
 
 After user confirms, proceed to publish.
 
+### Quick Publish Prompt
+
+When the user triggers publish without enough detail, send ONE message with all options:
+
+```
+📄 发布到 PawPrint
+
+我帮你整理了以下信息，请确认或修改：
+
+1️⃣ 标题：{从内容自动提取}
+2️⃣ 分类：Projects / Areas / Resources / Archives
+3️⃣ 保护：无 / 密码 / E2E加密 / 邮箱收集 / NDA / 限时过期
+
+可以直接回复，比如：
+• "ok" — 用默认设置直接发布
+• "分类改成资源" — 只改一项
+• "加密码 abc123，加邮箱收集" — 改多项
+• "2 资源 3 密码mykey+邮箱+NDA" — 一次全改
+```
+
 ### Smart Defaults
-- If user says "发布这篇" without details → auto-detect title from first heading, suggest category, default no extra protection
-- If user says "加密发布" → skip to E2E encryption, generate a random key, show share link with key
-- If user says "限时分享" → ask duration (1h/24h/7d), set expiresAt accordingly
-- Keep the conversation short — 2-3 messages max for simple publishes
+- Auto-detect title from first `#` heading
+- Auto-suggest category from content keywords (调研/报告 → projects, 手册/流程 → areas, 笔记/参考 → resources)
+- Default: no extra protection (public within site gate)
+- If user says "加密发布" → auto E2E, generate random key
+- If user says "限时分享" → ask duration (1h/24h/7d), set expiresAt
+- If user just says "ok" or "发" → publish immediately with defaults
+- Target: **1 message to confirm, 1 reply to publish** for simple cases
 
 ### 1. Prepare the Markdown file
 
