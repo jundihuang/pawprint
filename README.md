@@ -1,5 +1,7 @@
 # 🐾 PawPrint
 
+[English](./README.md) | [中文](./README_zh.md)
+
 **Leave your mark.** — Private docs, public simplicity.
 
 PawPrint is a lightweight, zero-database document sharing platform. Write in Markdown, set a password, push to Git — done.
