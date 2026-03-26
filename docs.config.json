@@ -4,12 +4,19 @@
     "description": "Private docs, public simplicity.",
     "password": "beansmile"
   },
+  "categories": [
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound project docs" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials & knowledge" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
+  ],
   "docs": [
     {
       "slug": "z1-research",
+      "category": "projects",
       "title": "Z1 竞品调研报告",
       "description": "Z1 (Zalify) 竞品深度分析 · ClawMe 视角",
-      "file": "docs/z1-research.md",
+      "file": "docs/projects/z1-research.md",
       "password": "beansmile",
       "icon": "📊",
       "date": "2026-03-26",

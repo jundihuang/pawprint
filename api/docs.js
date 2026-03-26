@@ -16,14 +16,13 @@ export default function handler(req, res) {
     return res.status(500).json({ error: 'Config not found' });
   }
 
-  // Verify site-level password
   if (config.site.password && config.site.password !== password) {
     return res.status(401).json({ error: 'Wrong site password' });
   }
 
-  // Return doc list without passwords and file paths
   const docs = config.docs.map(d => ({
     slug: d.slug,
+    category: d.category || 'resources',
     title: d.title,
     description: d.description,
     icon: d.icon || '📄',
@@ -34,6 +33,7 @@ export default function handler(req, res) {
 
   res.status(200).json({
     site: { title: config.site.title, description: config.site.description },
+    categories: config.categories || [],
     docs
   });
 }

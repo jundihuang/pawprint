@@ -185,6 +185,25 @@
     color: var(--muted); font-size: 14px;
   }
 
+  /* ===== Category Groups ===== */
+  .category-group { margin-bottom: 32px; }
+  .category-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .category-icon { font-size: 24px; }
+  .category-title {
+    font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .category-desc {
+    font-size: 12px; color: var(--muted); margin-top: 1px;
+  }
+  .category-docs {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
   @media (max-width: 640px) {
     .container { padding: 24px 16px 60px; }
     .doc-card { padding: 16px; gap: 12px; }
@@ -284,8 +303,9 @@ document.getElementById('site-gate-form').addEventListener('submit', async (e) =
     const data = await res.json();
     sitePassword = pwd;
     docsData = data.docs;
+    categoriesData = data.categories || [];
 
-    document.getElementById('site-title').textContent = '📚 ' + (data.site?.title || 'Docs');
+    document.getElementById('site-title').textContent = '🐾 ' + (data.site?.title || 'Docs');
     document.getElementById('site-desc').textContent = data.site?.description || '';
     document.title = data.site?.title || 'Docs';
 
@@ -316,28 +336,66 @@ async function init() {
   document.getElementById('site-gate-pwd').focus();
 }
 
+let categoriesData = [];
+
 function renderGrid() {
   const grid = document.getElementById('doc-grid');
   if (!docsData.length) {
-    grid.innerHTML = '<div class="loading">暂无文档</div>';
+    grid.innerHTML = '<div class="loading">No documents yet</div>';
     return;
   }
-  grid.innerHTML = docsData.map(d => `
-    <div class="doc-card" onclick="openDoc('${d.slug}')">
-      <div class="doc-icon">${d.icon}</div>
-      <div class="doc-info">
-        <h3>
-          ${d.title}
-          ${d.locked ? '<span class="badge badge-lock">🔒 加密</span>' : ''}
-        </h3>
-        <p>${d.description || ''}</p>
-        <div class="doc-meta-row">
-          ${d.author ? '<span>👤 ' + d.author + '</span>' : ''}
-          ${d.date ? '<span>📅 ' + d.date + '</span>' : ''}
+
+  // Group docs by category
+  const grouped = {};
+  docsData.forEach(d => {
+    const cat = d.category || 'resources';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(d);
+  });
+
+  // Render by category order
+  const catOrder = categoriesData.length
+    ? categoriesData.map(c => c.id)
+    : Object.keys(grouped);
+
+  let html = '';
+  catOrder.forEach(catId => {
+    const docs = grouped[catId];
+    if (!docs || !docs.length) return;
+    const catMeta = categoriesData.find(c => c.id === catId) || { label: catId, icon: '📁', description: '' };
+
+    html += `
+      <div class="category-group">
+        <div class="category-header">
+          <span class="category-icon">${catMeta.icon}</span>
+          <div>
+            <h2 class="category-title">${catMeta.label}</h2>
+            ${catMeta.description ? '<p class="category-desc">' + catMeta.description + '</p>' : ''}
+          </div>
+        </div>
+        <div class="category-docs">
+          ${docs.map(d => `
+            <div class="doc-card" onclick="openDoc('${d.slug}')">
+              <div class="doc-icon">${d.icon}</div>
+              <div class="doc-info">
+                <h3>
+                  ${d.title}
+                  ${d.locked ? '<span class="badge badge-lock">🔒</span>' : ''}
+                </h3>
+                <p>${d.description || ''}</p>
+                <div class="doc-meta-row">
+                  ${d.author ? '<span>👤 ' + d.author + '</span>' : ''}
+                  ${d.date ? '<span>📅 ' + d.date + '</span>' : ''}
+                </div>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  });
+
+  grid.innerHTML = html;
 }
 
 function openDoc(slug) {
