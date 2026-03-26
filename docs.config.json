@@ -51,6 +51,27 @@
       "icon": "🦌",
       "date": "2026-03-26",
       "author": "Lisa"
+    },
+    {
+      "slug": "syntax-demo",
+      "category": "resources",
+      "title": "PawPrint Feature Demo",
+      "description": "语法高亮 + Mermaid 图表 + 表格渲染测试",
+      "file": "docs/resources/syntax-demo.md",
+      "icon": "🎨",
+      "date": "2026-03-26",
+      "author": "Lisa (PM)"
+    },
+    {
+      "slug": "e2e-test",
+      "category": "resources",
+      "title": "E2E 加密测试",
+      "description": "AES-256-GCM 端到端加密文档演示",
+      "file": "docs/resources/e2e-test.md",
+      "icon": "🔐",
+      "date": "2026-03-26",
+      "author": "Lisa (PM)",
+      "encrypted": true
     }
   ]
 }
