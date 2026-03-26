@@ -343,7 +343,7 @@
 <body>
 
 <!-- Site Gate -->
-<div id="site-gate">
+<div id="site-gate" style="display:none;">
   <div class="container" style="display:flex;align-items:center;justify-content:center;min-height:80vh;">
     <div style="width:380px;">
       <h1 style="font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><i data-lucide="paw-print" style="width:24px;height:24px;"></i> PawPrint</h1>
@@ -394,6 +394,11 @@
       <div class="error" id="auth-error">Wrong password, try again</div>
     </form>
   </div>
+</div>
+
+<!-- Loading screen (prevents flash) -->
+<div id="loading-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);">
+  <div style="color:var(--muted);font-size:14px;">Loading...</div>
 </div>
 
 <!-- Email Gate Modal -->
@@ -532,6 +537,7 @@ async function trySiteUnlock(pwd, isManual) {
       viewCounts = vData.views || {};
     } catch {}
 
+    document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('site-gate').style.display = 'none';
     document.getElementById('list-view').style.display = 'block';
 
@@ -628,7 +634,10 @@ async function init() {
   const directSlug = route.slug || location.hash.slice(1);
   if (directSlug) {
     const ok = await tryDirectAccess(directSlug);
-    if (ok) return;
+    if (ok) {
+      document.getElementById('loading-screen').style.display = 'none';
+      return;
+    }
     // Doc needs password — need site unlock first to know if it's doc-locked or site-locked
   }
 
@@ -637,6 +646,7 @@ async function init() {
   if (remembered) {
     const ok = await trySiteUnlock(remembered, false);
     if (ok) {
+      document.getElementById('loading-screen').style.display = 'none';
       if (directSlug) {
         const doc = docsData.find(d => d.slug === directSlug);
         if (doc) openDoc(doc.slug);
@@ -644,6 +654,10 @@ async function init() {
       return;
     }
   }
+
+  // Show site gate
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('site-gate').style.display = 'block';
   document.getElementById('site-gate-pwd').focus();
 }
 
