@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+const fs = require('fs');
+const path = require('path');
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST with site password.' });
   }
@@ -10,7 +10,7 @@ export default function handler(req, res) {
 
   let config;
   try {
-    const raw = readFileSync(join(process.cwd(), 'docs.config.json'), 'utf8');
+    const raw = fs.readFileSync(path.join(process.cwd(), 'docs.config.json'), 'utf8');
     config = JSON.parse(raw);
   } catch {
     return res.status(500).json({ error: 'Config not found' });
@@ -36,4 +36,4 @@ export default function handler(req, res) {
     categories: config.categories || [],
     docs
   });
-}
+};

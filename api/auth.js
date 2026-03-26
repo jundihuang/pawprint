@@ -1,7 +1,7 @@
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+const fs = require('fs');
+const path = require('path');
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -13,10 +13,10 @@ export default function handler(req, res) {
 
   let config;
   try {
-    const raw = readFileSync(join(process.cwd(), 'docs.config.json'), 'utf8');
+    const raw = fs.readFileSync(path.join(process.cwd(), 'docs.config.json'), 'utf8');
     config = JSON.parse(raw);
-  } catch {
-    return res.status(500).json({ error: 'Config not found' });
+  } catch (e) {
+    return res.status(500).json({ error: 'Config not found', msg: e.message });
   }
 
   const doc = config.docs.find(d => d.slug === slug);
@@ -30,12 +30,15 @@ export default function handler(req, res) {
     }
   }
 
-  const filePath = join(process.cwd(), doc.file);
+  const filePath = path.join(process.cwd(), doc.file);
   let content;
   try {
-    content = readFileSync(filePath, 'utf8');
+    content = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    return res.status(500).json({ error: 'File not found', detail: doc.file, cwd: process.cwd() });
+    // Debug: list what's actually in cwd
+    let listing = [];
+    try { listing = fs.readdirSync(path.join(process.cwd(), 'docs', 'projects')); } catch {}
+    return res.status(500).json({ error: 'File not found', filePath, listing });
   }
 
   res.status(200).json({
@@ -44,4 +47,4 @@ export default function handler(req, res) {
     author: doc.author,
     date: doc.date
   });
-}
+};
