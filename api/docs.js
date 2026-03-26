@@ -37,7 +37,8 @@ module.exports = function handler(req, res) {
       encrypted: !!d.encrypted,
       requireEmail: !!d.requireEmail,
       requireNDA: !!d.requireNDA,
-      ndaText: d.ndaText || null
+      ndaText: d.ndaText || null,
+      oneTimeView: !!d.oneTimeView
     }));
 
   res.status(200).json({

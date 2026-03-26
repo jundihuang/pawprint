@@ -79,7 +79,7 @@ When the user triggers publish, send ONE message with numbered options. User rep
 
 1. 📂 项目  2. 📖 领域  3. 📚 资源  4. 📦 归档
 5. 🔒 密码  6. 🛡️ E2E加密  7. 📧 邮箱收集
-8. 📜 NDA签署  9. 🔥 限时过期
+8. 📜 NDA签署  9. 🔥 限时过期  10. 👁‍🗨 一次性查看
 
 默认：1（项目，无保护）→ 回复 ok 直接发布
 ```
@@ -90,6 +90,7 @@ When the user triggers publish, send ONE message with numbered options. User rep
 - "1,5,7" → category=projects + password + email gate
 - "2,6" → category=areas + E2E encryption
 - "1,5,7,8,9" → projects + password + email + NDA + burn
+- "3,10" → resources + one-time view (destroyed after first read)
 
 #### Follow-up (only when needed)
 After user selects, ask ONLY for items that need extra input:
@@ -97,6 +98,7 @@ After user selects, ask ONLY for items that need extra input:
 - Selected 6 (E2E) → auto-generate key, no need to ask
 - Selected 9 (burn) → "过期时间？1. 1小时  2. 24小时  3. 7天  4. 自定义"
 - Selected 8 (NDA) → use default NDA text unless user specifies custom
+- Selected 10 (one-time) → add `"oneTimeView": true`, warn user link dies after first view
 
 Then confirm and publish. Maximum 2 round-trips total.
 

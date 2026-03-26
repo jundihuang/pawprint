@@ -89,6 +89,15 @@
   .badge-e2e { background: #f0fdf4; color: var(--green); display: inline-flex; align-items: center; gap: 2px; }
   .badge-email { background: #eff6ff; color: var(--accent); }
   .badge-nda { background: #fef3c7; color: #92400e; display: inline-flex; align-items: center; gap: 2px; }
+  .otv-warning {
+    display: flex; align-items: center; gap: 8px;
+    background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: 13px; font-weight: 500;
+  }
+  [data-theme="dark"] .otv-warning {
+    background: #1c1112; color: #fca5a5; border-color: #7f1d1d;
+  }
 
   /* ===== Auth Modal ===== */
   .modal-overlay {
@@ -777,6 +786,7 @@ function renderGrid() {
                   ${d.encrypted ? '<span class="badge badge-e2e"><i data-lucide="shield-check" style="width:12px;height:12px;"></i> E2E</span>' : ''}
                   ${d.requireEmail ? '<span class="badge badge-email"><i data-lucide="mail" style="width:12px;height:12px;"></i></span>' : ''}
                   ${d.requireNDA ? '<span class="badge badge-nda"><i data-lucide="file-signature" style="width:12px;height:12px;"></i> NDA</span>' : ''}
+                  ${d.oneTimeView ? '<span class="badge badge-burn"><i data-lucide="eye-off" style="width:12px;height:12px;"></i> 1x</span>' : ''}
                 </h3>
                 <p>${d.description || ''}</p>
                 <div class="doc-meta-row">
@@ -1060,6 +1070,16 @@ async function renderDoc(data) {
       const ok = await new Promise(r => { e2eResolve = r; showE2EModal(); });
       if (!ok) return;
     }
+  }
+
+  // One-time view warning
+  const otWarning = document.getElementById('doc-content').parentElement.querySelector('.otv-warning');
+  if (otWarning) otWarning.remove();
+  if (data.oneTimeView) {
+    const warn = document.createElement('div');
+    warn.className = 'otv-warning';
+    warn.innerHTML = '<i data-lucide="alert-triangle" style="width:16px;height:16px;"></i> This document is one-time view. It has been destroyed after this viewing. Save what you need now.';
+    document.getElementById('doc-content').parentElement.insertBefore(warn, document.getElementById('doc-content'));
   }
 
   document.getElementById('doc-title').textContent = data.title;

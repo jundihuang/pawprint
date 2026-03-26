@@ -1,7 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = function handler(req, res) {
+async function kvRequest(url, token, command) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(command),
+  });
+  const data = await res.json();
+  return data.result;
+}
+
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -35,12 +45,23 @@ module.exports = function handler(req, res) {
     return res.status(410).json({ error: 'This document has expired', expired: true });
   }
 
+  // One-time view: check if already burned
+  const kvUrl = process.env.KV_REST_API_URL || process.env.pawprint_KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN || process.env.pawprint_KV_REST_API_TOKEN;
+
+  if (doc.oneTimeView && kvUrl && kvToken) {
+    const key = 'pawprint:burned:' + slug;
+    const burned = await kvRequest(kvUrl, kvToken, ['GET', key]);
+    if (burned) {
+      return res.status(410).json({ error: 'This document has been viewed and destroyed', burned: true });
+    }
+  }
+
   const filePath = path.join(process.cwd(), doc.file);
   let content;
   try {
     content = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    // Debug: list what's actually in cwd
     let listing = {};
     try {
       const docsDir = path.join(process.cwd(), 'docs');
@@ -56,11 +77,18 @@ module.exports = function handler(req, res) {
     return res.status(500).json({ error: 'File not found', filePath, listing });
   }
 
+  // Mark as burned after successful read
+  if (doc.oneTimeView && kvUrl && kvToken) {
+    const key = 'pawprint:burned:' + slug;
+    await kvRequest(kvUrl, kvToken, ['SET', key, new Date().toISOString()]);
+  }
+
   res.status(200).json({
     title: doc.title,
     content,
     author: doc.author,
     date: doc.date,
-    encrypted: !!doc.encrypted
+    encrypted: !!doc.encrypted,
+    oneTimeView: !!doc.oneTimeView
   });
 };
