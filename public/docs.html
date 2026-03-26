@@ -180,6 +180,40 @@
     font-size: 12px; color: var(--muted); text-align: center;
   }
 
+  /* ===== Doc Layout with TOC ===== */
+  .doc-layout {
+    display: flex; max-width: 1200px; margin: 0 auto;
+  }
+  .doc-main { flex: 1; min-width: 0; }
+  .toc-sidebar {
+    width: 220px; flex-shrink: 0;
+    position: sticky; top: 24px; align-self: flex-start;
+    max-height: calc(100vh - 48px); overflow-y: auto;
+    padding: 24px 0 24px 24px;
+    border-left: 1px solid var(--border);
+    margin-left: 24px;
+    display: none;
+  }
+  @media (min-width: 1024px) { .toc-sidebar { display: block; } }
+  .toc-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 12px; padding-left: 12px;
+  }
+  #toc-nav a {
+    display: block; padding: 4px 12px;
+    font-size: 13px; line-height: 1.5;
+    color: var(--muted); text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  #toc-nav a:hover { color: var(--text); }
+  #toc-nav a.active {
+    color: var(--accent); border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  #toc-nav a.toc-h3 { padding-left: 24px; font-size: 12px; }
+
   .loading {
     text-align: center; padding: 60px 0;
     color: var(--muted); font-size: 14px;
@@ -304,17 +338,25 @@
 
 <!-- Doc View -->
 <div id="doc-view">
-  <div class="container">
-    <div class="doc-header">
-      <a class="back" onclick="showList()">← Back to docs</a>
-      <h1 id="doc-title"></h1>
-      <div class="meta">
-        <span id="doc-author"></span>
-        <span id="doc-date"></span>
+  <div class="doc-layout">
+    <div class="doc-main">
+      <div class="container">
+        <div class="doc-header">
+          <a class="back" onclick="showList()">← Back to docs</a>
+          <h1 id="doc-title"></h1>
+          <div class="meta">
+            <span id="doc-author"></span>
+            <span id="doc-date"></span>
+          </div>
+        </div>
+        <div class="md-body" id="doc-content"></div>
+        <div class="doc-footer">PawPrint 🐾 — <a href="/" style="color:var(--accent);text-decoration:none;">Home</a></div>
       </div>
     </div>
-    <div class="md-body" id="doc-content"></div>
-    <div class="doc-footer">PawPrint 🐾 — <a href="/" style="color:var(--accent);text-decoration:none;">Home</a></div>
+    <aside class="toc-sidebar" id="toc-sidebar">
+      <div class="toc-title">On this page</div>
+      <nav id="toc-nav"></nav>
+    </aside>
   </div>
 </div>
 
@@ -658,6 +700,9 @@ function renderDoc(data) {
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
 
+  // Build TOC from headings
+  buildTOC();
+
   // Use pushState instead of location.hash to avoid triggering popstate
   const docPath = activeCategory
     ? '/docs/' + activeCategory + '/' + currentSlug
@@ -703,6 +748,58 @@ window.addEventListener('popstate', (e) => {
     renderGrid();
   }
 });
+
+// ===== TOC Builder + Scroll Spy =====
+function buildTOC() {
+  const tocNav = document.getElementById('toc-nav');
+  const docBody = document.getElementById('doc-content');
+  const headings = docBody.querySelectorAll('h1, h2, h3');
+
+  if (headings.length < 2) {
+    document.getElementById('toc-sidebar').style.display = 'none';
+    return;
+  }
+
+  let html = '';
+  headings.forEach((h, i) => {
+    if (!h.id) h.id = 'heading-' + i;
+    const level = h.tagName.toLowerCase();
+    const cls = level === 'h3' ? ' toc-h3' : '';
+    const text = h.textContent.replace(/^[\d.]+\s*/, '').trim();
+    if (text) {
+      html += '<a href="#' + h.id + '" class="toc-link' + cls + '" data-target="' + h.id + '">' + text + '</a>';
+    }
+  });
+  tocNav.innerHTML = html;
+
+  // Click handler — smooth scroll
+  tocNav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(a.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Scroll spy
+  let ticking = false;
+  function updateActiveTOC() {
+    const links = tocNav.querySelectorAll('.toc-link');
+    const scrollY = window.scrollY + 80;
+    let current = null;
+    headings.forEach((h) => {
+      if (h.offsetTop <= scrollY) current = h.id;
+    });
+    links.forEach(l => {
+      l.classList.toggle('active', l.dataset.target === current);
+    });
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(updateActiveTOC); }
+  }, { passive: true });
+  updateActiveTOC();
+}
 
 init();
 </script>
