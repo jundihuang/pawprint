@@ -5,10 +5,30 @@
     "password": "beansmile"
   },
   "categories": [
-    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound project docs" },
-    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
-    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials & knowledge" },
-    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
+    {
+      "id": "projects",
+      "label": "Projects",
+      "icon": "📂",
+      "description": "Time-bound project docs"
+    },
+    {
+      "id": "areas",
+      "label": "Areas",
+      "icon": "📖",
+      "description": "Ongoing areas of responsibility"
+    },
+    {
+      "id": "resources",
+      "label": "Resources",
+      "icon": "📚",
+      "description": "Reference materials & knowledge"
+    },
+    {
+      "id": "archives",
+      "label": "Archives",
+      "icon": "📦",
+      "description": "Completed or inactive"
+    }
   ],
   "docs": [
     {
@@ -21,6 +41,16 @@
       "icon": "📊",
       "date": "2026-03-26",
       "author": "Lisa (PM)"
+    },
+    {
+      "slug": "deerflow-research",
+      "category": "projects",
+      "title": "DeerFlow 调研报告：字节跳动开源 SuperAgent 框架",
+      "description": "DeerFlow 2.0 核心架构、与 OpenClaw / ClawHost 对比分析",
+      "file": "docs/projects/deerflow-research.md",
+      "icon": "🦌",
+      "date": "2026-03-26",
+      "author": "Lisa"
     }
   ]
 }
