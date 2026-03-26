@@ -380,6 +380,10 @@
 </div>
 
 <!-- Markdown parser (marked.js CDN) -->
+<!-- Vercel Web Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Vercel Speed Insights -->
+<script defer src="/_vercel/speed-insights/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
 <script>
 let currentSlug = null;
@@ -739,6 +743,9 @@ function renderDoc(data) {
 
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
+
+  // Track doc view
+  if (window.va) window.va('event', { name: 'doc_view', data: { slug: currentSlug, title: data.title } });
 
   // Build TOC from headings
   buildTOC();
