@@ -9,6 +9,7 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/admin", "destination": "/public/admin.html" },
     { "source": "/docs", "destination": "/public/docs.html" },
     { "source": "/docs/:category", "destination": "/public/docs.html" },
     { "source": "/docs/:category/:slug", "destination": "/public/docs.html" },

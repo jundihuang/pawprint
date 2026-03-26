@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawPrint — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a; --card: #141414; --text: #e5e5e5; --muted: #888;
+    --border: #2a2a2a; --accent: #5b9cf6; --accent-light: #1a2332;
+    --green: #4ade80; --red: #f87171; --yellow: #fbbf24;
+    --code-bg: #1a1a1a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Auth */
+  #auth-screen {
+    min-height: 80vh; display: flex;
+    align-items: center; justify-content: center;
+  }
+  #auth-screen .auth-box { width: 380px; }
+  #auth-screen h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  #auth-screen p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  #auth-screen input {
+    width: 100%; padding: 10px 14px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; color: var(--text); outline: none;
+  }
+  #auth-screen input:focus { border-color: var(--accent); }
+  #auth-screen button {
+    width: 100%; padding: 10px; margin-top: 10px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; font-size: 14px; cursor: pointer;
+  }
+  .auth-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+  /* Dashboard */
+  #dashboard { display: none; }
+  .dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .dash-header h1 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .dash-header a { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .dash-header a:hover { color: var(--accent); }
+
+  /* Stats Cards */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Sections */
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 15px; font-weight: 600; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px; color: var(--muted);
+  }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    text-align: left; padding: 10px 14px; font-weight: 600;
+    border-bottom: 1px solid var(--border); color: var(--muted);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .data-table td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-green { background: rgba(74,222,128,0.1); color: var(--green); }
+  .badge-blue { background: rgba(91,156,246,0.1); color: var(--accent); }
+  .badge-yellow { background: rgba(251,191,36,0.1); color: var(--yellow); }
+
+  .depth-bar {
+    display: inline-block; height: 6px; border-radius: 3px;
+    background: var(--accent); min-width: 4px; max-width: 100px;
+  }
+
+  .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+  .refresh-btn {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 14px; font-size: 12px;
+    color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .refresh-btn:hover { color: var(--text); border-color: var(--accent); }
+  .time-ago { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1><i data-lucide="paw-print" style="width:22px;height:22px;"></i> PawPrint Admin</h1>
+    <p>Enter the site password to view analytics.</p>
+    <form id="auth-form">
+      <input type="password" id="auth-pwd" placeholder="Site password" autocomplete="off" autofocus>
+      <button type="submit">Unlock Dashboard</button>
+      <div class="auth-error" id="auth-error">Wrong password</div>
+    </form>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="container">
+    <div class="dash-header">
+      <h1><i data-lucide="bar-chart-3" style="width:22px;height:22px;"></i> PawPrint Analytics</h1>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="refresh-btn" onclick="loadData()"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Refresh</button>
+        <a href="/docs">← Back to Docs</a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- Views by Doc -->
+    <div class="section">
+      <div class="section-title"><i data-lucide="eye" style="width:16px;height:16px;"></i> Views by Document</div>
+      <div id="views-table"></div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="section">
+      <div class="section-title"><i data-lucide="activity" style="width:16px;height:16px;"></i> Recent Activity</div>
+      <div id="events-table"></div>
+    </div>
+
+    <!-- Email Leads -->
+    <div class="section">
+      <div class="section-title"><i data-lucide="mail" style="width:16px;height:16px;"></i> Email Leads</div>
+      <div id="leads-table"></div>
+    </div>
+
+    <!-- Reading Depth -->
+    <div class="section">
+      <div class="section-title"><i data-lucide="scroll" style="width:16px;height:16px;"></i> Reading Depth</div>
+      <div id="reading-table"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let sitePassword = '';
+
+// Auth
+document.getElementById('auth-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pwd = document.getElementById('auth-pwd').value;
+  try {
+    const res = await fetch('/api/docs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    if (!res.ok) throw new Error();
+    sitePassword = pwd;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } catch {
+    document.getElementById('auth-error').style.display = 'block';
+  }
+});
+
+function timeAgo(ts) {
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return hours + 'h ago';
+  return Math.floor(hours / 24) + 'd ago';
+}
+
+async function loadData() {
+  const [viewsRes, eventsRes, readingRes] = await Promise.all([
+    fetch('/api/views').then(r => r.json()),
+    fetch('/api/views?type=events').then(r => r.json()),
+    fetch('/api/reading').then(r => r.json()),
+  ]);
+
+  const views = viewsRes.views || {};
+  const events = eventsRes.events || [];
+  const readings = readingRes.readings || [];
+
+  // Collect all leads from events with emails
+  const emailEvents = events.filter(e => e.email && e.email !== 'anonymous');
+
+  // Stats
+  const totalViews = Object.values(views).reduce((a, b) => a + b, 0);
+  const totalDocs = Object.keys(views).length;
+  const totalLeads = emailEvents.length;
+  const avgDepth = readings.length
+    ? Math.round(readings.reduce((a, r) => a + (r.depth || 0), 0) / readings.length)
+    : 0;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Total Views</div>
+      <div class="stat-value">${totalViews}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Documents Viewed</div>
+      <div class="stat-value">${totalDocs}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Email Leads</div>
+      <div class="stat-value">${totalLeads}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Read Depth</div>
+      <div class="stat-value">${avgDepth}%</div>
+    </div>
+  `;
+
+  // Views table
+  const sortedViews = Object.entries(views).sort((a, b) => b[1] - a[1]);
+  document.getElementById('views-table').innerHTML = sortedViews.length ? `
+    <table class="data-table">
+      <thead><tr><th>Document</th><th>Views</th></tr></thead>
+      <tbody>${sortedViews.map(([slug, count]) =>
+        `<tr><td>${slug}</td><td><span class="badge badge-blue">${count}</span></td></tr>`
+      ).join('')}</tbody>
+    </table>
+  ` : '<div class="empty">No views yet</div>';
+
+  // Events table
+  document.getElementById('events-table').innerHTML = events.length ? `
+    <table class="data-table">
+      <thead><tr><th>Document</th><th>Viewer</th><th>Time</th></tr></thead>
+      <tbody>${events.slice(0, 20).map(e =>
+        `<tr>
+          <td>${e.title || e.slug}</td>
+          <td>${e.email === 'anonymous' ? '<span class="time-ago">anonymous</span>' : '<span class="badge badge-green">' + e.email + '</span>'}</td>
+          <td><span class="time-ago">${timeAgo(e.ts)}</span></td>
+        </tr>`
+      ).join('')}</tbody>
+    </table>
+  ` : '<div class="empty">No activity yet</div>';
+
+  // Leads table
+  document.getElementById('leads-table').innerHTML = emailEvents.length ? `
+    <table class="data-table">
+      <thead><tr><th>Email</th><th>Document</th><th>Time</th></tr></thead>
+      <tbody>${emailEvents.map(e =>
+        `<tr>
+          <td><span class="badge badge-green">${e.email}</span></td>
+          <td>${e.title || e.slug}</td>
+          <td><span class="time-ago">${timeAgo(e.ts)}</span></td>
+        </tr>`
+      ).join('')}</tbody>
+    </table>
+  ` : '<div class="empty">No email leads yet</div>';
+
+  // Reading depth table
+  document.getElementById('reading-table').innerHTML = readings.length ? `
+    <table class="data-table">
+      <thead><tr><th>Document</th><th>Viewer</th><th>Depth</th><th>Duration</th><th>Time</th></tr></thead>
+      <tbody>${readings.slice(0, 20).map(r =>
+        `<tr>
+          <td>${r.slug}</td>
+          <td>${r.email === 'anonymous' ? '<span class="time-ago">anon</span>' : '<span class="badge badge-green">' + r.email + '</span>'}</td>
+          <td><span class="depth-bar" style="width:${r.depth}px"></span> ${r.depth}%</td>
+          <td>${r.duration}s</td>
+          <td><span class="time-ago">${timeAgo(r.ts)}</span></td>
+        </tr>`
+      ).join('')}</tbody>
+    </table>
+  ` : '<div class="empty">No reading data yet</div>';
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// Init icons
+document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+</script>
+</body>
+</html>
