@@ -83,6 +83,16 @@
       "icon": "🚀",
       "date": "2026-03-26",
       "author": "Lisa"
+    },
+    {
+      "slug": "clawhost-x-deerflow",
+      "category": "projects",
+      "title": "ClawHost × DeerFlow：托管 DeerFlow 的商业机会分析",
+      "description": "ClawHost 托管 DeerFlow 的可行性、商业模式、路线图与推广策略",
+      "file": "docs/projects/clawhost-x-deerflow.md",
+      "icon": "🏗️",
+      "date": "2026-03-26",
+      "author": "Lisa"
     }
   ]
 }
