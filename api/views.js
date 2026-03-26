@@ -15,8 +15,9 @@ async function kvRequest(url, token, command) {
 }
 
 module.exports = async function handler(req, res) {
-  const kvUrl = process.env.KV_REST_API_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN;
+  // Support both prefixed and standard env var names
+  const kvUrl = process.env.KV_REST_API_URL || process.env.pawprint_KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN || process.env.pawprint_KV_REST_API_TOKEN;
 
   if (!kvUrl || !kvToken) {
     return res.status(200).json({ error: 'KV not configured', views: {} });
