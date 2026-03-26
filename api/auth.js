@@ -1,6 +1,5 @@
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
 
 export default function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,28 +11,11 @@ export default function handler(req, res) {
     return res.status(400).json({ error: 'Missing slug' });
   }
 
-  // Try multiple base paths
-  const bases = [
-    process.cwd(),
-    join(process.cwd(), '..'),
-    dirname(fileURLToPath(import.meta.url)),
-    join(dirname(fileURLToPath(import.meta.url)), '..'),
-  ];
-
   let config;
-  let basePath;
-  for (const base of bases) {
-    const configPath = join(base, 'docs.config.json');
-    if (existsSync(configPath)) {
-      try {
-        config = JSON.parse(readFileSync(configPath, 'utf8'));
-        basePath = base;
-        break;
-      } catch {}
-    }
-  }
-
-  if (!config) {
+  try {
+    const raw = readFileSync(join(process.cwd(), 'docs.config.json'), 'utf8');
+    config = JSON.parse(raw);
+  } catch {
     return res.status(500).json({ error: 'Config not found' });
   }
 
@@ -48,21 +30,12 @@ export default function handler(req, res) {
     }
   }
 
-  const filePath = join(basePath, doc.file);
-  if (!existsSync(filePath)) {
-    return res.status(500).json({
-      error: 'File not found',
-      detail: doc.file,
-      basePath,
-      cwd: process.cwd()
-    });
-  }
-
+  const filePath = join(process.cwd(), doc.file);
   let content;
   try {
     content = readFileSync(filePath, 'utf8');
   } catch (err) {
-    return res.status(500).json({ error: 'Read error', detail: err.message });
+    return res.status(500).json({ error: 'File not found', detail: doc.file, cwd: process.cwd() });
   }
 
   res.status(200).json({

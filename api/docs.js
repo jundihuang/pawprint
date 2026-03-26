@@ -1,6 +1,5 @@
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 export default function handler(req, res) {
   if (req.method !== 'POST') {
@@ -9,25 +8,11 @@ export default function handler(req, res) {
 
   const { password } = req.body || {};
 
-  const bases = [
-    process.cwd(),
-    join(process.cwd(), '..'),
-    dirname(fileURLToPath(import.meta.url)),
-    join(dirname(fileURLToPath(import.meta.url)), '..'),
-  ];
-
   let config;
-  for (const base of bases) {
-    const configPath = join(base, 'docs.config.json');
-    if (existsSync(configPath)) {
-      try {
-        config = JSON.parse(readFileSync(configPath, 'utf8'));
-        break;
-      } catch {}
-    }
-  }
-
-  if (!config) {
+  try {
+    const raw = readFileSync(join(process.cwd(), 'docs.config.json'), 'utf8');
+    config = JSON.parse(raw);
+  } catch {
     return res.status(500).json({ error: 'Config not found' });
   }
 
