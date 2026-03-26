@@ -333,22 +333,25 @@
   }
 
   /* ===== Dynamic Watermark ===== */
+  #doc-view { position: relative; }
   .watermark-overlay {
-    position: absolute; inset: 0;
-    pointer-events: none; z-index: 10;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 999;
     overflow: hidden;
   }
   .watermark-overlay::before {
-    content: attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark);
-    position: absolute; inset: -50%;
-    font-size: 14px; font-weight: 500;
-    color: rgba(128,128,128,0.08);
-    transform: rotate(-30deg);
+    content: attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark);
+    position: absolute;
+    top: -100%; left: -100%; right: -100%; bottom: -100%;
+    font-size: 15px; font-weight: 500;
+    color: rgba(128,128,128,0.09);
+    transform: rotate(-25deg);
     white-space: pre-wrap; word-break: break-all;
-    line-height: 4; letter-spacing: 6px;
+    line-height: 4.5; letter-spacing: 8px;
     pointer-events: none;
     user-select: none;
   }
+  @media print { .watermark-overlay { display: none !important; } }
 
   @keyframes spin { to { transform: rotate(360deg); } }
   .spin { animation: spin 1s linear infinite; }
@@ -1158,19 +1161,18 @@ async function renderDoc(data) {
   }
 
   // Dynamic watermark for protected docs
-  const existingWM = docBody.parentElement.querySelector('.watermark-overlay');
+  const existingWM = document.getElementById('doc-view').querySelector('.watermark-overlay');
   if (existingWM) existingWM.remove();
   const docMeta = docsData.find(d => d.slug === currentSlug);
   const isProtected = (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail || docMeta.requireNDA))
-    || data.encrypted;
+    || data.encrypted || data.oneTimeView;
   if (isProtected) {
     const wmEmail = sessionStorage.getItem('pp_email_' + currentSlug) || '';
     const wmText = wmEmail || new Date().toISOString().slice(0, 16).replace('T', ' ');
     const wm = document.createElement('div');
     wm.className = 'watermark-overlay';
     wm.setAttribute('data-watermark', wmText);
-    docBody.parentElement.style.position = 'relative';
-    docBody.parentElement.appendChild(wm);
+    document.getElementById('doc-view').appendChild(wm);
   }
 
   // Render Lucide icons in doc view
