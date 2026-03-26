@@ -68,6 +68,7 @@
     border-radius: 4px; font-size: 11px; font-weight: 600;
   }
   .badge-lock { background: #fefce8; color: var(--yellow); }
+  .badge-burn { background: #fef2f2; color: var(--red); }
 
   /* ===== Auth Modal ===== */
   .modal-overlay {
@@ -553,6 +554,7 @@ function renderGrid() {
                 <h3>
                   ${d.title}
                   ${d.locked ? '<span class="badge badge-lock">🔒</span>' : ''}
+                  ${d.burn ? '<span class="badge badge-burn">🔥</span>' : ''}
                 </h3>
                 <p>${d.description || ''}</p>
                 <div class="doc-meta-row">
@@ -633,7 +635,9 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
     closeAuth();
   } catch (err) {
     const errEl = document.getElementById('auth-error');
-    errEl.textContent = err.status === 500 ? 'Server error — file may be missing' : 'Wrong password, try again';
+    errEl.textContent = err.status === 410 ? '🔥 This document has expired'
+      : err.status === 500 ? 'Server error — file may be missing'
+      : 'Wrong password, try again';
     errEl.style.display = 'block';
     document.getElementById('auth-pwd').value = '';
     document.getElementById('auth-pwd').focus();

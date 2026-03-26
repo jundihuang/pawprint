@@ -20,16 +20,21 @@ module.exports = function handler(req, res) {
     return res.status(401).json({ error: 'Wrong site password' });
   }
 
-  const docs = config.docs.map(d => ({
-    slug: d.slug,
-    category: d.category || 'resources',
-    title: d.title,
-    description: d.description,
-    icon: d.icon || '📄',
-    date: d.date,
-    author: d.author,
-    locked: !!d.password
-  }));
+  const now = new Date();
+  const docs = config.docs
+    .filter(d => !d.expiresAt || new Date(d.expiresAt) > now) // hide expired docs
+    .map(d => ({
+      slug: d.slug,
+      category: d.category || 'resources',
+      title: d.title,
+      description: d.description,
+      icon: d.icon || '📄',
+      date: d.date,
+      author: d.author,
+      locked: !!d.password,
+      burn: !!d.expiresAt,
+      expiresAt: d.expiresAt || null
+    }));
 
   res.status(200).json({
     site: { title: config.site.title, description: config.site.description },

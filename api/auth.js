@@ -30,6 +30,11 @@ module.exports = function handler(req, res) {
     }
   }
 
+  // Check expiration (burn-after-time)
+  if (doc.expiresAt && new Date(doc.expiresAt) < new Date()) {
+    return res.status(410).json({ error: 'This document has expired', expired: true });
+  }
+
   const filePath = path.join(process.cwd(), doc.file);
   let content;
   try {
