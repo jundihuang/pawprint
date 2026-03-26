@@ -27,14 +27,49 @@ Docs are organized by PARA method. Choose the right category:
 
 ## Publish Workflow
 
-### 0. Confirm with user
+### 0. Interactive Setup — Ask the user step by step
 
-Before publishing, ask:
-1. Which category? (projects / areas / resources / archives)
-2. **Do you want to set a password for this document?** If yes, what password?
-3. Confirm title, description, and slug
+Do NOT ask all questions at once. Ask one at a time, suggest defaults based on context, and skip what's obvious.
 
-If the user doesn't specify a password, publish without one (public within the site gate).
+**Step 1 — Content**: If user hasn't provided content, ask what to publish. If they gave a file or pasted content, confirm it.
+
+**Step 2 — Title & Description**: Suggest a title based on the content. Ask if they want to change it.
+> "标题我建议用「竞品分析：Z1 vs ClawMe」，描述用「Z1 竞品深度分析」，可以吗？"
+
+**Step 3 — Category**: Suggest the most likely category based on content type:
+> "这篇是调研报告，放到 **📂 项目** 分类可以吗？"
+- 调研/报告/提案 → projects
+- 流程/手册/规范 → areas
+- 笔记/参考/指南 → resources
+- 旧文档/已完成 → archives
+
+**Step 4 — Protection** (ask as a single question with options):
+> "需要设置什么保护吗？
+> 1. 🔓 不设密码（站点密码内公开）
+> 2. 🔒 设文档密码
+> 3. 🛡️ 端到端加密（最高安全级别）
+> 4. 📧 要求读者输入邮箱
+> 5. 📜 要求签署 NDA
+> 6. 🔥 限时过期（阅后即焚）
+>
+> 可以多选，比如 2+4 = 密码 + 邮箱收集"
+
+**Step 5 — Confirm & Publish**:
+Show a summary and ask for confirmation:
+> "确认发布：
+> - 📄 标题：竞品分析：Z1 vs ClawMe
+> - 📂 分类：Projects
+> - 🔒 密码：report2026
+> - 📧 邮箱门控：开启
+> - 发布？"
+
+After user confirms, proceed to publish.
+
+### Smart Defaults
+- If user says "发布这篇" without details → auto-detect title from first heading, suggest category, default no extra protection
+- If user says "加密发布" → skip to E2E encryption, generate a random key, show share link with key
+- If user says "限时分享" → ask duration (1h/24h/7d), set expiresAt accordingly
+- Keep the conversation short — 2-3 messages max for simple publishes
 
 ### 1. Prepare the Markdown file
 
