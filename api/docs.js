@@ -33,7 +33,8 @@ module.exports = function handler(req, res) {
       author: d.author,
       locked: !!d.password,
       burn: !!d.expiresAt,
-      expiresAt: d.expiresAt || null
+      expiresAt: d.expiresAt || null,
+      encrypted: !!d.encrypted
     }));
 
   res.status(200).json({

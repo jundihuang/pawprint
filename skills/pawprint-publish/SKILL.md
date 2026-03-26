@@ -73,6 +73,21 @@ Rules:
 - `password` is optional — omit the field entirely for public docs
 - `icon` should be a single emoji that represents the content
 - Always read the existing config first — never overwrite it
+- `encrypted` — set to `true` for E2E encrypted docs (see below)
+
+### E2E Encrypted Documents
+
+For sensitive documents, encrypt content client-side before publishing:
+
+1. Write the markdown to a temp file
+2. Run the encrypt script:
+```bash
+node skills/pawprint-publish/scripts/encrypt.js /tmp/doc.md docs/<category>/<slug>.md <secret-key>
+```
+3. In `docs.config.json`, add `"encrypted": true` to the doc entry
+4. Share the link with key in fragment: `https://site.vercel.app/docs/<category>/<slug>#key=<secret-key>`
+
+The key never touches the server. Only the encrypted blob is stored in Git.
 
 ### 3. Commit and push
 

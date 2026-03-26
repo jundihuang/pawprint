@@ -50,6 +50,7 @@ module.exports = function handler(req, res) {
     title: doc.title,
     content,
     author: doc.author,
-    date: doc.date
+    date: doc.date,
+    encrypted: !!doc.encrypted
   });
 };

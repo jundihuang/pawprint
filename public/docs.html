@@ -75,6 +75,7 @@
   }
   .badge-lock { background: #fefce8; color: var(--yellow); }
   .badge-burn { background: #fef2f2; color: var(--red); }
+  .badge-e2e { background: #f0fdf4; color: var(--green); display: inline-flex; align-items: center; gap: 2px; }
 
   /* ===== Auth Modal ===== */
   .modal-overlay {
@@ -679,6 +680,7 @@ function renderGrid() {
                   ${d.title}
                   ${d.locked ? '<span class="badge badge-lock"><i data-lucide="lock" style="width:12px;height:12px;"></i></span>' : ''}
                   ${d.burn ? '<span class="badge badge-burn"><i data-lucide="flame" style="width:12px;height:12px;"></i></span>' : ''}
+                  ${d.encrypted ? '<span class="badge badge-e2e"><i data-lucide="shield-check" style="width:12px;height:12px;"></i> E2E</span>' : ''}
                 </h3>
                 <p>${d.description || ''}</p>
                 <div class="doc-meta-row">
@@ -796,7 +798,32 @@ async function fetchDoc(slug, password) {
   renderDoc(data);
 }
 
-function renderDoc(data) {
+async function renderDoc(data) {
+  // If encrypted, decrypt content client-side
+  if (data.encrypted && data.content) {
+    // Get decryption key from URL fragment: #key=xxx or from prompt
+    let e2eKey = null;
+    const hashParams = new URLSearchParams(location.hash.slice(1));
+    e2eKey = hashParams.get('key');
+    if (!e2eKey) {
+      e2eKey = prompt('This document is end-to-end encrypted.\nEnter the decryption key:');
+    }
+    if (!e2eKey) {
+      document.getElementById('doc-content').innerHTML = '<p style="color:var(--red);">Decryption key required to view this document.</p>';
+      document.getElementById('list-view').style.display = 'none';
+      document.getElementById('doc-view').style.display = 'block';
+      return;
+    }
+    try {
+      data.content = await E2E.decrypt(data.content, e2eKey);
+    } catch {
+      document.getElementById('doc-content').innerHTML = '<p style="color:var(--red);">Failed to decrypt. Wrong key?</p>';
+      document.getElementById('list-view').style.display = 'none';
+      document.getElementById('doc-view').style.display = 'block';
+      return;
+    }
+  }
+
   document.getElementById('doc-title').textContent = data.title;
   document.getElementById('doc-author').innerHTML = data.author ? '<i data-lucide="user" style="width:14px;height:14px;vertical-align:-2px;"></i> ' + data.author : '';
   document.getElementById('doc-date').innerHTML = data.date ? '<i data-lucide="calendar" style="width:14px;height:14px;vertical-align:-2px;"></i> ' + data.date : '';
@@ -978,6 +1005,41 @@ function buildTOC() {
 }
 
 let lastDocRaw = null;
+
+// ===== E2E Encryption Utilities =====
+const E2E = {
+  async deriveKey(password, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+      keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+    );
+  },
+  async encrypt(plaintext, password) {
+    const enc = new TextEncoder();
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await this.deriveKey(password, salt);
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext));
+    // Pack: salt(16) + iv(12) + ciphertext
+    const packed = new Uint8Array(salt.length + iv.length + new Uint8Array(ciphertext).length);
+    packed.set(salt, 0);
+    packed.set(iv, 16);
+    packed.set(new Uint8Array(ciphertext), 28);
+    return btoa(String.fromCharCode(...packed));
+  },
+  async decrypt(base64Data, password) {
+    const packed = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    const salt = packed.slice(0, 16);
+    const iv = packed.slice(16, 28);
+    // ciphertext + authTag (Web Crypto expects them concatenated)
+    const ciphertextWithTag = packed.slice(28);
+    const key = await this.deriveKey(password, salt);
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertextWithTag);
+    return new TextDecoder().decode(decrypted);
+  }
+};
 
 // ===== Markdown Export =====
 function exportMD() {
