@@ -131,13 +131,16 @@
   }
   .doc-header .back:hover { color: var(--accent); }
   .doc-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .export-btns {
+    display: inline-flex; gap: 6px; margin-left: auto;
+  }
   .pdf-btn {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 4px 12px; border-radius: 6px;
     font-size: 12px; font-weight: 500;
     color: var(--muted); background: var(--card);
     border: 1px solid var(--border);
-    cursor: pointer; transition: all .15s; margin-left: auto;
+    cursor: pointer; transition: all .15s;
   }
   .pdf-btn:hover { color: var(--text); border-color: var(--accent); }
   @media print {
@@ -384,12 +387,14 @@
           <div class="meta">
             <span id="doc-author"></span>
             <span id="doc-date"></span>
-            <button class="pdf-btn" id="md-btn" onclick="exportMD()" title="Download as Markdown">
-              <i data-lucide="file-text" style="width:14px;height:14px;"></i> MD
-            </button>
-            <button class="pdf-btn" id="pdf-btn" onclick="exportPDF()" title="Download as PDF">
-              <i data-lucide="download" style="width:14px;height:14px;"></i> PDF
-            </button>
+            <span class="export-btns">
+              <button class="pdf-btn" id="md-btn" onclick="exportMD()" title="Download as Markdown">
+                <i data-lucide="file-text" style="width:14px;height:14px;"></i> MD
+              </button>
+              <button class="pdf-btn" id="pdf-btn" onclick="exportPDF()" title="Download as PDF">
+                <i data-lucide="download" style="width:14px;height:14px;"></i> PDF
+              </button>
+            </span>
           </div>
         </div>
         <div class="md-body" id="doc-content"></div>
