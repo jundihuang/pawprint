@@ -1,269 +1,206 @@
 # 🐾 PawPrint
 
-[English](./README.md) | [中文](./README_zh.md) | [非技术用户指南](./GUIDE.md)
+**留下你的爪印。** — 私密文档，极简分享。
 
-**Leave your mark.** — Private docs, public simplicity.
-
-PawPrint is a lightweight, zero-database document sharing platform. Write in Markdown, set a password, push to Git — done.
-
-🔗 **Demo**: [pawprint-jayce.vercel.app](https://pawprint-jayce.vercel.app)
+[English](#-what-is-pawprint) | [开发者文档](./DEVELOPER.md) | [Developer Docs (EN)](./DEVELOPER.md)
 
 ---
 
-## ✨ Features
+## 🐾 PawPrint 是什么？
 
-### Core
-- **📝 Markdown First** — Tables, code blocks, quotes, images — all render beautifully
-- **🔒 Two-Layer Passwords** — Site-level gate + per-document passwords, all verified server-side
-- **🔗 Direct Links** — Share any doc via URL — passwordless docs bypass the site gate
-- **🚀 Git Push to Deploy** — Manage docs in Git, Vercel auto-deploys on push
-- **💾 Zero Database** — Pure static files + serverless functions
-- **📂 PARA Organization** — Docs organized by Projects, Areas, Resources, Archives with tab routing
-- **🔍 Search** — Real-time filtering by title, description, author
+PawPrint 是一个**私密文档分享工具**。
 
-### Security & Privacy
-- **🛡️ E2E Encryption** — Optional AES-256-GCM per-doc encryption. Key in URL fragment, never touches server
-- **💧 Dynamic Watermark** — Semi-transparent overlay on protected docs showing viewer email/date
-- **🔥 Burn-After-Time** — Docs with `expiresAt` auto-expire and disappear (API returns 410 Gone)
-- **📧 Email Gate** — Require viewers to enter email before accessing a doc (leads stored in KV)
-- **🧠 Password Memory** — Site password remembered 3 days, doc passwords 1 day (localStorage)
+你写好一篇文档 → 设个密码 → 发个链接给别人 → 对方输入密码就能看。
 
-### Reading Experience
-- **📑 TOC Sidebar** — Auto-generated table of contents with scroll spy
-- **🎨 Syntax Highlighting** — highlight.js with theme-aware light/dark styles
-- **📊 Mermaid Diagrams** — Flowcharts, sequence diagrams, pie charts auto-rendered
-- **🌗 Dark/Light Theme** — Toggle with localStorage persistence
+就这么简单。没有注册、没有登录、没有月费。
 
-### Analytics
-- **👁 View Counter** — Per-document read count (Vercel KV / Upstash Redis)
-- **📊 Reading Depth** — Scroll depth %, time spent per doc
-- **📧 Lead Collection** — Email addresses from gated docs
-- **⚡ Activity Feed** — Who viewed what, when, from where
-- **📈 Admin Dashboard** — `/admin` with stats, activity, leads, and reading analytics
+**最特别的是：** 如果你用 [OpenClaw](https://github.com/openclaw/openclaw)（一个 AI 助手平台），你的 AI Agent 可以**直接帮你发布文档**。不需要任何技术操作。
 
-### Export
-- **📥 PDF Download** — Client-side A4 PDF generation
-- **📄 MD Download** — Raw Markdown source file export
+🔗 **体验一下**: [pawprint-jayce.vercel.app](https://pawprint-jayce.vercel.app)
 
-### AI Agent
-- **🤖 OpenClaw Skill** — AI agents can publish docs with natural language
-- **🔐 E2E Encrypt Script** — Agents can encrypt sensitive docs before publishing
+---
 
-## 🗂️ Project Structure
+## ✨ 能做什么？
 
-```
-pawprint/
-├── public/
-│   ├── index.html        # Landing page (dark theme, parallax)
-│   ├── docs.html         # Doc browser (password-gated)
-│   └── admin.html        # Analytics dashboard
-├── api/
-│   ├── docs.js           # Doc list API (POST, site password)
-│   ├── auth.js           # Doc content API (POST, per-doc password)
-│   ├── views.js          # View counter + activity log
-│   ├── leads.js          # Email lead storage
-│   └── reading.js        # Scroll depth analytics
-├── docs/                  # Your Markdown documents
-│   ├── projects/          # Time-bound deliverables
-│   ├── areas/             # Ongoing responsibilities
-│   ├── resources/         # Reference materials
-│   └── archives/          # Completed or inactive
-├── skills/
-│   └── pawprint-publish/  # OpenClaw AI agent skill
-├── docs.config.json       # Site config + document registry
-├── vercel.json            # Vercel routing config
-├── CHANGELOG.md           # Full version history
-└── package.json
-```
+| 功能 | 说明 |
+|------|------|
+| 📝 **写文档** | 用 Markdown 写，表格、代码、图表都支持 |
+| 🔒 **设密码** | 每篇文档可以设独立密码 |
+| 🛡️ **端到端加密** | 敏感文档可以加密，连服务器都看不到内容 |
+| 🔥 **阅后即焚** | 设定时间后文档自动消失 |
+| 📧 **收集邮箱** | 要求读者输入邮箱才能看，自动收集线索 |
+| 💧 **防截图水印** | 受保护的文档自动加上半透明水印 |
+| 📊 **阅读分析** | 知道谁看了、看了多久、看到哪里 |
+| 📥 **下载导出** | 一键导出 PDF 或 Markdown 原文件 |
+| 🌗 **深色/浅色** | 切换阅读主题 |
+| 🤖 **AI 发布** | 告诉 Agent 一句话，它帮你发布 |
 
-## 🚀 Quick Start
+---
 
-### 1. Clone & Configure
+## 🚀 怎么开始？
 
-```bash
-git clone https://github.com/user/pawprint.git
-cd pawprint
-```
+### 如果你有 OpenClaw（推荐）
 
-### 2. Add Your First Document
+直接告诉你的 Agent：
 
-```bash
-echo "# Hello World\n\nMy first private doc." > docs/projects/hello.md
-```
+> **"帮我搭建一个 PawPrint 文档分享站。"**
 
-### 3. Register in Config
+Agent 会一步步引导你完成。你需要准备的只有：
 
-Edit `docs.config.json`:
+1. **一个 GitHub 账号** — [github.com](https://github.com) 免费注册
+   - GitHub 就像一个"代码网盘"，PawPrint 的文档存在这里
+2. **一个 Vercel 账号** — [vercel.com](https://vercel.com) 用 GitHub 账号一键登录
+   - Vercel 是一个免费的网站托管服务，让你的 PawPrint 变成一个可以访问的网址
 
-```json
-{
-  "site": {
-    "title": "My Docs",
-    "description": "Private knowledge base",
-    "password": "your-site-password"
-  },
-  "categories": [
-    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
-    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas" },
-    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
-    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
-  ],
-  "docs": [
-    {
-      "slug": "hello",
-      "category": "projects",
-      "title": "Hello World",
-      "description": "My first doc",
-      "file": "docs/projects/hello.md",
-      "icon": "👋",
-      "date": "2026-01-01",
-      "author": "You"
-    }
-  ]
-}
-```
+注册完告诉 Agent，它会帮你搞定剩下的一切。
 
-#### Document Config Options
+### 如果你是开发者
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `slug` | ✅ | URL-safe identifier |
-| `category` | ✅ | `projects` / `areas` / `resources` / `archives` |
-| `title` | ✅ | Display title |
-| `description` | | One-line description |
-| `file` | ✅ | Path to `.md` file |
-| `password` | | Per-doc password (omit for public) |
-| `icon` | | Emoji icon |
-| `date` | | Publication date |
-| `author` | | Author name |
-| `encrypted` | | `true` for E2E encrypted docs |
-| `expiresAt` | | ISO date — doc expires after this time |
-| `requireEmail` | | `true` to require email before access |
+请看 [开发者文档 (DEVELOPER.md)](./DEVELOPER.md)，里面有完整的技术细节。
 
-### 4. Deploy to Vercel
+---
 
-**Option A: Auto-deploy via GitHub (recommended)**
+## 📖 日常使用
 
-1. Push your repo to GitHub
-2. Go to [vercel.com/new](https://vercel.com/new)
-3. Click **"Import Git Repository"** → select your PawPrint repo
-4. Keep all defaults (no framework, no build command needed) → click **Deploy**
-5. Done. Every `git push` to `main` will auto-deploy
+所有操作都可以通过跟 Agent 对话完成：
 
-**Option B: CLI deploy**
+### 发布文档
 
-```bash
-npm i -g vercel
-vercel          # first time: links project
-vercel --prod   # deploy to production
-```
+> "把这篇调研报告发布到 PawPrint，放到项目分类，密码设 report2026。"
 
-> **Important**: Your git committer email must match a verified email on your GitHub account, otherwise Vercel will reject the deployment.
+Agent 会自动发布并给你分享链接。
 
-### 5. Enable Analytics (Optional)
+### 加密发布
 
-Create a Vercel KV store (Upstash Redis) for view counts, leads, and reading analytics:
+> "用端到端加密发布这篇文档，密钥是 topsecret。"
 
-1. Vercel Dashboard → your project → **Storage** → **Upstash Redis**
-2. Create a database → environment variables auto-injected
-3. Redeploy once to pick up the new env vars
+生成的链接自带密钥，只有拿到链接的人才能看。
 
-### 6. Access
+### 限时分享
 
-| URL | What |
-|-----|------|
-| `/` | Landing page |
-| `/docs` | Password-protected doc browser |
-| `/docs/projects` | Filtered by category |
-| `/docs#slug` | Direct link to a doc |
-| `/admin` | Analytics dashboard |
+> "发布这篇文档，48 小时后自动过期。"
 
-## 📂 PARA Method
+过期后链接自动失效。
 
-| Category | Folder | Use for |
+### 收集线索
+
+> "发布这篇白皮书，要求读者输入邮箱才能看。"
+
+读者的邮箱会自动收集到你的后台。
+
+### 查看数据
+
+> "查看 PawPrint 的阅读数据。"
+
+或者直接打开你的网址后面加 `/admin`（比如 `your-site.vercel.app/admin`），输入站点密码就能看到分析仪表盘。
+
+---
+
+## 📂 文档怎么分类？
+
+PawPrint 用 **PARA 方法**组织文档，4 个分类：
+
+| 分类 | 放什么 | 举例 |
+|------|--------|------|
+| 📂 **项目** | 有截止日期的事 | 调研报告、提案、竞品分析 |
+| 📖 **领域** | 持续维护的内容 | 操作手册、流程文档 |
+| 📚 **资源** | 参考资料 | 学习笔记、工具清单 |
+| 📦 **归档** | 已完成的东西 | 旧报告、过期方案 |
+
+发布时告诉 Agent 放哪个分类就行。
+
+---
+
+## 🔐 安全说明
+
+| 保护方式 | 怎么用 | 安全级别 |
 |----------|--------|---------|
-| 📂 Projects | `docs/projects/` | Time-bound deliverables (research, proposals, PRDs) |
-| 📖 Areas | `docs/areas/` | Ongoing responsibilities (playbooks, processes) |
-| 📚 Resources | `docs/resources/` | Reference material (guides, notes, collections) |
-| 📦 Archives | `docs/archives/` | Completed or inactive content |
+| **站点密码** | 整个文档站需要密码才能进入 | ⭐⭐ |
+| **文档密码** | 每篇文档独立密码 | ⭐⭐⭐ |
+| **端到端加密** | 文档内容加密，连服务器都看不到 | ⭐⭐⭐⭐⭐ |
+| **邮箱门控** | 读者必须留邮箱才能看 | ⭐⭐ |
+| **水印** | 截图也能追溯到谁泄露的 | ⭐⭐⭐ |
+| **限时过期** | 到时间自动销毁 | ⭐⭐⭐⭐ |
 
-## 🔐 Security Model
-
-| Layer | Scope | How | Memory |
-|-------|-------|-----|--------|
-| Site password | Entire `/docs` | Server-side POST | 3 days |
-| Doc password | Individual doc | Server-side POST | 1 day |
-| E2E encryption | Doc content | Client-side AES-256-GCM | Key in URL fragment |
-| Email gate | Individual doc | Frontend modal → KV | Per session |
-| Dynamic watermark | Protected docs | CSS overlay | — |
-| Burn-after-time | Individual doc | Server-side expiry check | — |
-
-- Passwords **never exposed** in client-side code
-- E2E keys **never touch the server** (URL fragment only)
-- API requires POST — no accidental GET leaks
-- No cookies, no sessions, no tracking (except opt-in analytics)
-
-## 🤖 AI Agent Integration (OpenClaw)
-
-Any [OpenClaw](https://github.com/openclaw/openclaw) agent can publish docs with natural language:
-
-> "Publish this research report to PawPrint under Projects"
-
-### Install the Skill
-
-```bash
-cp -r skills/pawprint-publish ~/.openclaw/skills/shared/
-```
-
-Add to OpenClaw config:
-
-```json
-{
-  "skills": {
-    "load": {
-      "extraDirs": ["~/.openclaw/skills/shared"]
-    }
-  }
-}
-```
-
-### E2E Encrypted Publishing
-
-```bash
-node skills/pawprint-publish/scripts/encrypt.js input.md docs/projects/secret.md "my-key"
-# Share: /docs/projects/secret#key=my-key
-```
-
-## 💡 Why PawPrint?
-
-> Notion is a collaboration tool. Obsidian is a thinking tool. **PawPrint is a publishing tool** — and the only one AI agents can operate directly.
-
-| | PawPrint | Notion | Obsidian | Papermark |
-|--|---------|--------|----------|-----------|
-| **AI agent publish** | ✅ `git push` | ❌ Block API | ⚠️ Local only | ❌ |
-| **Per-doc passwords** | ✅ | ❌ | ❌ | ✅ |
-| **E2E encryption** | ✅ | ❌ | ❌ | ❌ |
-| **Email lead gate** | ✅ | ❌ | ❌ | ✅ |
-| **Reading analytics** | ✅ | ❌ | ❌ | ✅ |
-| **Zero database** | ✅ | ❌ | ✅ | ❌ |
-| **Self-hostable** | ✅ | ❌ | ✅ | ✅ |
-| **Cost** | Free | $10/mo+ | $8/mo publish | $39/mo+ |
-
-**PawPrint is the publishing layer.** You think in Obsidian, collaborate in Notion — and when you need to securely share a result, PawPrint is the simplest exit.
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Pure HTML/CSS/JS + [marked.js](https://marked.js.org/) + [highlight.js](https://highlightjs.org/) + [Mermaid](https://mermaid.js.org/) + [Lucide Icons](https://lucide.dev/) (zero build step)
-- **Backend**: Vercel Serverless Functions (Node.js)
-- **Storage**: Vercel KV / Upstash Redis (optional, for analytics)
-- **Fonts**: [Inter](https://rsms.me/inter/) + [Instrument Serif](https://fonts.google.com/specimen/Instrument+Serif)
-- **PDF Export**: [html2pdf.js](https://ekoopmans.github.io/html2pdf.js/)
-- **Deploy**: [Vercel](https://vercel.com) (free tier)
-
-## 📄 License
-
-MIT
+所有密码在服务器端验证，不会暴露在浏览器里。
+端到端加密的密钥**永远不经过服务器**。
 
 ---
 
-**PawPrint** 🐾 — Leave your mark.
+## 💰 要花钱吗？
+
+**不花钱。** 完全免费。
+
+- GitHub：免费
+- Vercel：免费套餐足够用
+- PawPrint：开源，MIT 协议
+- 分析功能（可选）：Upstash Redis 免费套餐，每天 3000 次请求
+
+---
+
+## 💡 跟其他工具有什么不同？
+
+| | PawPrint | Notion | Google Docs | 微信发文件 |
+|--|---------|--------|-------------|-----------|
+| 需要对方注册 | ❌ 不需要 | ✅ 要 | ✅ 要 | ❌ |
+| 独立密码 | ✅ 每篇不同 | ❌ | ❌ | ❌ |
+| 加密 | ✅ 端到端 | ❌ | ❌ | ❌ |
+| 知道谁看了 | ✅ | ❌ | ✅ 有限 | ❌ |
+| 自动过期 | ✅ | ❌ | ❌ | ❌ |
+| AI 直接发布 | ✅ | ❌ | ❌ | ❌ |
+| 费用 | 免费 | $10/月起 | 免费 | 免费 |
+
+**一句话总结：** PawPrint 是最简单的"写完→加密→分享→追踪"工具。
+
+---
+
+## ❓ 常见问题
+
+**Q: 我需要会编程吗？**
+不需要。如果你用 OpenClaw，所有操作都是跟 AI 对话完成的。
+
+**Q: 手机能看吗？**
+可以，文档页面自适应移动端。
+
+**Q: 能自定义网址吗？**
+可以。在 Vercel 设置里绑定你自己的域名（比如 `docs.你的公司.com`）。
+
+**Q: 文档存在哪里？**
+存在你自己的 GitHub 私有仓库里。只有你能访问。
+
+**Q: 有人数限制吗？**
+没有。想分享给多少人就分享给多少人。
+
+**Q: 能用来做什么？**
+- 给客户发提案/报告
+- 团队内部文档分享
+- 收集潜在客户邮箱
+- 分享敏感资料（合同、方案、数据）
+- AI Agent 自动生成并发布研究报告
+
+---
+
+## 🤝 对话示例
+
+```
+你：把今天的竞品分析发布到 PawPrint，密码设 report2026
+🤖：✅ 已发布！链接：https://your-site.vercel.app/docs#competitor-analysis
+
+你：这篇需要对方输入邮箱才能看
+🤖：✅ 已更新，读者需要输入邮箱后才能访问。
+
+你：昨天的文档有人看了吗？
+🤖：有！jayce@example.com 看了竞品分析，阅读深度 85%，停留 3 分钟。
+
+你：帮我把那篇文档设成 48 小时后过期
+🤖：✅ 已设置，文档将在后天 20:00 自动失效。
+
+你：用端到端加密发一篇新文档
+🤖：✅ 已加密发布。分享链接（含密钥）：
+     https://your-site.vercel.app/docs/projects/secret#key=abc123
+     只有拿到这个完整链接的人才能解密查看。
+```
+
+---
+
+**PawPrint** 🐾 — 留下你的爪印。

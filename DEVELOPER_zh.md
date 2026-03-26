@@ -1,6 +1,6 @@
 # 🐾 PawPrint
 
-[English](./README.md) | [中文](./README_zh.md) | [非技术用户指南](./GUIDE.md)
+[← 返回主页](./README.md) | [English](./DEVELOPER.md) | [中文](./DEVELOPER_zh.md)
 
 **留下你的爪印。** — 私密文档，极简分享。
 
