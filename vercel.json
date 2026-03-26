@@ -9,6 +9,7 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/docs", "destination": "/public/docs.html" },
     { "source": "/(.*)", "destination": "/public/index.html" }
   ]
 }
