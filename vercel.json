@@ -4,7 +4,7 @@
   "outputDirectory": "",
   "functions": {
     "api/*.js": {
-      "includeFiles": "docs/**,docs.config.json"
+      "includeFiles": "docs/**/*,docs/**,docs.config.json"
     }
   },
   "rewrites": [

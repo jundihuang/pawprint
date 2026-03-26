@@ -7,8 +7,8 @@ export default function handler(req, res) {
   }
 
   const { slug, password } = req.body || {};
-  if (!slug || !password) {
-    return res.status(400).json({ error: 'Missing slug or password' });
+  if (!slug) {
+    return res.status(400).json({ error: 'Missing slug' });
   }
 
   let config;
@@ -24,16 +24,19 @@ export default function handler(req, res) {
     return res.status(404).json({ error: 'Document not found' });
   }
 
-  if (doc.password && doc.password !== password) {
-    return res.status(401).json({ error: 'Wrong password' });
+  // If doc has password, verify it
+  if (doc.password) {
+    if (!password || doc.password !== password) {
+      return res.status(401).json({ error: 'Wrong password' });
+    }
   }
 
   // Read markdown
   let content;
   try {
     content = readFileSync(join(process.cwd(), doc.file), 'utf8');
-  } catch {
-    return res.status(500).json({ error: 'File not found' });
+  } catch (err) {
+    return res.status(500).json({ error: 'File not found', detail: doc.file });
   }
 
   res.status(200).json({

@@ -441,7 +441,8 @@ function openDoc(slug) {
     }
     showAuth(doc);
   } else {
-    fetchDoc(slug, '');
+    // No password needed — open directly
+    fetchDoc(slug, null);
   }
 }
 
@@ -480,10 +481,12 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
 });
 
 async function fetchDoc(slug, password) {
+  const body = { slug };
+  if (password) body.password = password;
   const res = await fetch('/api/auth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ slug, password })
+    body: JSON.stringify(body)
   });
 
   if (!res.ok) throw new Error('Auth failed');
