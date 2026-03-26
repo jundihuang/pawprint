@@ -10,6 +10,8 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/docs", "destination": "/public/docs.html" },
+    { "source": "/docs/:category", "destination": "/public/docs.html" },
+    { "source": "/docs/:category/:slug", "destination": "/public/docs.html" },
     { "source": "/(.*)", "destination": "/public/index.html" }
   ]
 }

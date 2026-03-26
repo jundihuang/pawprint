@@ -185,6 +185,32 @@
     color: var(--muted); font-size: 14px;
   }
 
+  /* ===== Category Tabs ===== */
+  .category-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-tab {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted); text-decoration: none;
+    border: 1px solid transparent;
+    transition: all .15s ease;
+    cursor: pointer;
+  }
+  .cat-tab:hover { color: var(--text); background: var(--hover); }
+  .cat-tab.active {
+    color: var(--text); background: var(--accent-light);
+    border-color: var(--accent);
+  }
+  .cat-count {
+    font-size: 11px; color: var(--muted);
+    background: var(--border); border-radius: 4px;
+    padding: 0 5px; min-width: 18px; text-align: center;
+  }
+
   /* ===== Category Groups ===== */
   .category-group { margin-bottom: 32px; }
   .category-header {
@@ -354,12 +380,33 @@ async function trySiteUnlock(pwd, isManual) {
   }
 }
 
+// ===== URL Routing =====
+function getRouteInfo() {
+  const path = window.location.pathname;
+  const match = path.match(/^\/docs(?:\/([a-z]+))?(?:\/([a-z0-9-]+))?$/);
+  return {
+    category: match ? match[1] || null : null,
+    slug: match ? match[2] || null : null,
+  };
+}
+
+let activeCategory = null;
+
 // ===== Init: try remembered password first =====
 async function init() {
+  const route = getRouteInfo();
+  activeCategory = route.category;
+
   const remembered = loadPassword('site');
   if (remembered) {
     const ok = await trySiteUnlock(remembered, false);
-    if (ok) return;
+    if (ok) {
+      if (route.slug) {
+        const doc = docsData.find(d => d.slug === route.slug);
+        if (doc) openDoc(doc.slug);
+      }
+      return;
+    }
   }
   document.getElementById('site-gate-pwd').focus();
 }
@@ -373,9 +420,29 @@ function renderGrid() {
     return;
   }
 
+  // Filter by active category if set
+  const filteredDocs = activeCategory
+    ? docsData.filter(d => (d.category || 'resources') === activeCategory)
+    : docsData;
+
+  // Render category tabs
+  let tabsHtml = '<div class="category-tabs"><a href="/docs" class="cat-tab' + (!activeCategory ? ' active' : '') + '">All</a>';
+  categoriesData.forEach(c => {
+    const count = docsData.filter(d => (d.category || 'resources') === c.id).length;
+    if (count > 0) {
+      tabsHtml += '<a href="/docs/' + c.id + '" class="cat-tab' + (activeCategory === c.id ? ' active' : '') + '">' + c.icon + ' ' + c.label + ' <span class="cat-count">' + count + '</span></a>';
+    }
+  });
+  tabsHtml += '</div>';
+
+  if (!filteredDocs.length) {
+    grid.innerHTML = tabsHtml + '<div class="loading">No documents in this category</div>';
+    return;
+  }
+
   // Group docs by category
   const grouped = {};
-  docsData.forEach(d => {
+  filteredDocs.forEach(d => {
     const cat = d.category || 'resources';
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(d);
@@ -423,7 +490,19 @@ function renderGrid() {
     `;
   });
 
-  grid.innerHTML = html;
+  grid.innerHTML = tabsHtml + html;
+
+  // Handle tab clicks with SPA navigation
+  grid.querySelectorAll('.cat-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = tab.getAttribute('href');
+      const match = href.match(/^\/docs(?:\/([a-z]+))?$/);
+      activeCategory = match && match[1] ? match[1] : null;
+      window.history.pushState({}, '', href);
+      renderGrid();
+    });
+  });
 }
 
 function openDoc(slug) {
@@ -520,17 +599,23 @@ function renderDoc(data) {
 function showList() {
   document.getElementById('doc-view').style.display = 'none';
   document.getElementById('list-view').style.display = 'block';
-  location.hash = '';
+  const backPath = activeCategory ? '/docs/' + activeCategory : '/docs';
+  window.history.pushState({}, '', backPath);
   currentSlug = null;
+  renderGrid();
 }
 
-// Handle back button
-window.addEventListener('hashchange', () => {
-  const hash = location.hash.slice(1);
-  if (!hash) showList();
-  else {
-    const doc = docsData.find(d => d.slug === hash);
+// Handle back/forward navigation
+window.addEventListener('popstate', () => {
+  const route = getRouteInfo();
+  activeCategory = route.category;
+  if (route.slug) {
+    const doc = docsData.find(d => d.slug === route.slug);
     if (doc) openDoc(doc.slug);
+  } else if (docsData.length) {
+    document.getElementById('doc-view').style.display = 'none';
+    document.getElementById('list-view').style.display = 'block';
+    renderGrid();
   }
 });
 
