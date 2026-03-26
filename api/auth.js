@@ -41,8 +41,18 @@ module.exports = function handler(req, res) {
     content = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
     // Debug: list what's actually in cwd
-    let listing = [];
-    try { listing = fs.readdirSync(path.join(process.cwd(), 'docs', 'projects')); } catch {}
+    let listing = {};
+    try {
+      const docsDir = path.join(process.cwd(), 'docs');
+      fs.readdirSync(docsDir).forEach(sub => {
+        const subPath = path.join(docsDir, sub);
+        try {
+          if (fs.statSync(subPath).isDirectory()) {
+            listing[sub] = fs.readdirSync(subPath);
+          }
+        } catch {}
+      });
+    } catch {}
     return res.status(500).json({ error: 'File not found', filePath, listing });
   }
 
