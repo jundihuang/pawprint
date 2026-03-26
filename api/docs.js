@@ -2,12 +2,23 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export default function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed. Use POST with site password.' });
+  }
+
+  const { password } = req.body || {};
+
   let config;
   try {
     const raw = readFileSync(join(process.cwd(), 'docs.config.json'), 'utf8');
     config = JSON.parse(raw);
   } catch {
     return res.status(500).json({ error: 'Config not found' });
+  }
+
+  // Verify site-level password
+  if (config.site.password && config.site.password !== password) {
+    return res.status(401).json({ error: 'Wrong site password' });
   }
 
   // Return doc list without passwords and file paths
@@ -22,7 +33,7 @@ export default function handler(req, res) {
   }));
 
   res.status(200).json({
-    site: config.site,
+    site: { title: config.site.title, description: config.site.description },
     docs
   });
 }

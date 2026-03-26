@@ -1,7 +1,8 @@
 {
   "site": {
-    "title": "ClawMe Docs",
-    "description": "内部文档分享平台"
+    "title": "PawPrint Docs",
+    "description": "Private docs, public simplicity.",
+    "password": "beansmile"
   },
   "docs": [
     {

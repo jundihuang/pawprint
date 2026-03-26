@@ -195,29 +195,49 @@
 </head>
 <body>
 
+<!-- Site Gate -->
+<div id="site-gate">
+  <div class="container" style="display:flex;align-items:center;justify-content:center;min-height:80vh;">
+    <div style="width:380px;">
+      <h1 style="font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;">🐾 PawPrint</h1>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">Enter the site password to browse docs.</p>
+      <form id="site-gate-form">
+        <input type="password" id="site-gate-pwd" placeholder="Site password" autocomplete="off" autofocus
+          style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        <button type="submit" id="site-gate-btn"
+          style="width:100%;padding:10px;margin-top:10px;background:var(--text);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;">
+          Unlock
+        </button>
+        <div class="error" id="site-gate-error" style="color:var(--red);font-size:12px;margin-top:8px;display:none;">Wrong password</div>
+        <a href="/" style="display:block;text-align:center;margin-top:14px;font-size:13px;color:var(--muted);text-decoration:none;">← Back to Home</a>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- List View -->
-<div id="list-view">
+<div id="list-view" style="display:none;">
   <div class="container">
     <div class="site-header">
       <h1 id="site-title">📚 Docs</h1>
       <p id="site-desc"></p>
     </div>
     <div class="doc-grid" id="doc-grid">
-      <div class="loading">加载中...</div>
+      <div class="loading">Loading...</div>
     </div>
   </div>
 </div>
 
-<!-- Auth Modal -->
+<!-- Auth Modal (per-doc) -->
 <div class="modal-overlay" id="auth-modal">
   <div class="modal">
-    <h2>🔒 文档已加密</h2>
+    <h2>🔒 Document Locked</h2>
     <p class="subtitle" id="auth-doc-title"></p>
     <form id="auth-form">
-      <input type="password" id="auth-pwd" placeholder="输入访问密码" autocomplete="off" autofocus>
-      <button type="submit" id="auth-btn">解锁</button>
-      <button type="button" class="cancel" onclick="closeAuth()">取消</button>
-      <div class="error" id="auth-error">密码错误，请重试</div>
+      <input type="password" id="auth-pwd" placeholder="Enter document password" autocomplete="off" autofocus>
+      <button type="submit" id="auth-btn">Unlock</button>
+      <button type="button" class="cancel" onclick="closeAuth()">Cancel</button>
+      <div class="error" id="auth-error">Wrong password, try again</div>
     </form>
   </div>
 </div>
@@ -243,16 +263,26 @@
 <script>
 let currentSlug = null;
 let docsData = [];
+let sitePassword = '';
 const sessionPasswords = {};
 
-// Init
-async function init() {
-  // Check URL hash for direct doc link
-  const hash = location.hash.slice(1);
+// Site Gate
+document.getElementById('site-gate-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pwd = document.getElementById('site-gate-pwd').value;
+  const btn = document.getElementById('site-gate-btn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
 
   try {
-    const res = await fetch('/api/docs');
+    const res = await fetch('/api/docs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    if (!res.ok) throw new Error('Auth failed');
     const data = await res.json();
+    sitePassword = pwd;
     docsData = data.docs;
 
     document.getElementById('site-title').textContent = '📚 ' + (data.site?.title || 'Docs');
@@ -261,13 +291,29 @@ async function init() {
 
     renderGrid();
 
+    document.getElementById('site-gate').style.display = 'none';
+    document.getElementById('list-view').style.display = 'block';
+
+    // Check hash for direct doc link
+    const hash = location.hash.slice(1);
     if (hash) {
       const doc = docsData.find(d => d.slug === hash);
       if (doc) openDoc(doc.slug);
     }
-  } catch (e) {
-    document.getElementById('doc-grid').innerHTML = '<div class="loading">加载失败</div>';
+  } catch {
+    document.getElementById('site-gate-error').style.display = 'block';
+    document.getElementById('site-gate-pwd').value = '';
+    document.getElementById('site-gate-pwd').focus();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Unlock';
   }
+});
+
+// Init — no longer auto-loads
+async function init() {
+  // Focus the site gate password input
+  document.getElementById('site-gate-pwd').focus();
 }
 
 function renderGrid() {
