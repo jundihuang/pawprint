@@ -409,6 +409,12 @@
 </div>
 
 <!-- Markdown parser (marked.js CDN) -->
+<!-- Syntax Highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" id="hljs-light">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" id="hljs-dark" disabled>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<!-- Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <!-- html2pdf.js for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
 <!-- Lucide Icons -->
@@ -508,6 +514,9 @@ async function trySiteUnlock(pwd, isManual) {
   function updateIcon() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     btn.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '" style="width:16px;height:16px;"></i>';
+    // Switch hljs theme
+    document.getElementById('hljs-light').disabled = isDark;
+    document.getElementById('hljs-dark').disabled = !isDark;
     if (window.lucide) lucide.createIcons();
   }
   updateIcon();
@@ -833,6 +842,29 @@ function renderDoc(data) {
   }).then(r => r.json()).then(d => {
     if (d.views) viewCounts[currentSlug] = d.views;
   }).catch(() => {});
+
+  // Syntax highlighting
+  docBody.querySelectorAll('pre code').forEach(block => {
+    // Check if it's a mermaid block
+    if (block.className.includes('mermaid') || block.className.includes('language-mermaid')) {
+      const pre = block.parentElement;
+      const div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = block.textContent;
+      pre.replaceWith(div);
+    } else {
+      hljs.highlightElement(block);
+    }
+  });
+
+  // Render mermaid diagrams
+  if (window.mermaid && docBody.querySelector('.mermaid')) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    });
+    mermaid.run({ nodes: docBody.querySelectorAll('.mermaid') });
+  }
 
   // Render Lucide icons in doc view
   if (window.lucide) lucide.createIcons();
