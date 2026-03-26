@@ -14,7 +14,7 @@ PawPrint 是一个**私密文档分享工具**。
 
 就这么简单。没有注册、没有登录、没有月费。
 
-**最特别的是：** 如果你用 [OpenClaw](https://github.com/openclaw/openclaw)（一个 AI 助手平台），你的 AI Agent 可以**直接帮你发布文档**。不需要任何技术操作。
+**最特别的是：** 任何 AI 工具都能帮你发布文档 —— 无论是 [OpenClaw](https://github.com/openclaw/openclaw)、Claude Code、Cursor、Windsurf、ChatGPT，还是直接写 Markdown 手动 push。PawPrint 不绑定任何平台。
 
 🔗 **体验一下**: [pawprint-jayce.vercel.app](https://pawprint-jayce.vercel.app)
 
@@ -30,6 +30,7 @@ PawPrint 是一个**私密文档分享工具**。
 | 🔥 **阅后即焚** | 设定时间后文档自动消失 |
 | 📧 **收集邮箱** | 要求读者输入邮箱才能看，自动收集线索 |
 | 💧 **防截图水印** | 受保护的文档自动加上半透明水印 |
+| 📜 **NDA 签署** | 要求读者签署保密协议后才能看文档 |
 | 📊 **阅读分析** | 知道谁看了、看了多久、看到哪里 |
 | 📥 **下载导出** | 一键导出 PDF 或 Markdown 原文件 |
 | 🌗 **深色/浅色** | 切换阅读主题 |
@@ -39,9 +40,9 @@ PawPrint 是一个**私密文档分享工具**。
 
 ## 🚀 怎么开始？
 
-### 如果你有 OpenClaw（推荐）
+### 如果你有 AI 助手（推荐）
 
-直接告诉你的 Agent：
+不管你用的是 OpenClaw、Claude Code、Cursor 还是其他 AI 工具，直接告诉它：
 
 > **"帮我搭建一个 PawPrint 文档分享站。"**
 
@@ -233,6 +234,9 @@ PawPrint 用 **PARA 方法**组织文档，4 个分类：
 
 你：帮我把那篇文档设成 48 小时后过期
 🤖：✅ 已设置，文档将在后天 20:00 自动失效。
+
+你：这篇合同方案需要对方先签 NDA 才能看
+🤖：✅ 已开启 NDA 门控，读者必须同意保密协议后才能访问。
 
 你：用端到端加密发一篇新文档
 🤖：✅ 已加密发布。分享链接（含密钥）：

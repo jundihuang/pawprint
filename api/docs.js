@@ -35,7 +35,9 @@ module.exports = function handler(req, res) {
       burn: !!d.expiresAt,
       expiresAt: d.expiresAt || null,
       encrypted: !!d.encrypted,
-      requireEmail: !!d.requireEmail
+      requireEmail: !!d.requireEmail,
+      requireNDA: !!d.requireNDA,
+      ndaText: d.ndaText || null
     }));
 
   res.status(200).json({
