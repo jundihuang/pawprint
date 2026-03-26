@@ -76,6 +76,7 @@
   .badge-lock { background: #fefce8; color: var(--yellow); }
   .badge-burn { background: #fef2f2; color: var(--red); }
   .badge-e2e { background: #f0fdf4; color: var(--green); display: inline-flex; align-items: center; gap: 2px; }
+  .badge-email { background: #eff6ff; color: var(--accent); }
 
   /* ===== Auth Modal ===== */
   .modal-overlay {
@@ -310,6 +311,24 @@
     display: flex; flex-direction: column; gap: 10px;
   }
 
+  /* ===== Dynamic Watermark ===== */
+  .watermark-overlay {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 10;
+    overflow: hidden;
+  }
+  .watermark-overlay::before {
+    content: attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark) "  " attr(data-watermark);
+    position: absolute; inset: -50%;
+    font-size: 14px; font-weight: 500;
+    color: rgba(128,128,128,0.06);
+    transform: rotate(-30deg);
+    white-space: pre-wrap; word-break: break-all;
+    line-height: 4; letter-spacing: 6px;
+    pointer-events: none;
+    user-select: none;
+  }
+
   @keyframes spin { to { transform: rotate(360deg); } }
   .spin { animation: spin 1s linear infinite; }
 
@@ -373,6 +392,19 @@
       <button type="submit" id="auth-btn">Unlock</button>
       <button type="button" class="cancel" onclick="closeAuth()">Cancel</button>
       <div class="error" id="auth-error">Wrong password, try again</div>
+    </form>
+  </div>
+</div>
+
+<!-- Email Gate Modal -->
+<div class="modal-overlay" id="email-modal">
+  <div class="modal">
+    <h2 style="display:flex;align-items:center;gap:8px;"><i data-lucide="mail" style="width:18px;height:18px;"></i> Email Required</h2>
+    <p class="subtitle" id="email-doc-title">Enter your email to access this document.</p>
+    <form id="email-form">
+      <input type="email" id="email-input" placeholder="your@email.com" autocomplete="email" required>
+      <button type="submit" id="email-btn">Continue</button>
+      <button type="button" class="cancel" onclick="closeEmailGate()">Cancel</button>
     </form>
   </div>
 </div>
@@ -695,6 +727,7 @@ function renderGrid() {
                   ${d.locked ? '<span class="badge badge-lock"><i data-lucide="lock" style="width:12px;height:12px;"></i></span>' : ''}
                   ${d.burn ? '<span class="badge badge-burn"><i data-lucide="flame" style="width:12px;height:12px;"></i></span>' : ''}
                   ${d.encrypted ? '<span class="badge badge-e2e"><i data-lucide="shield-check" style="width:12px;height:12px;"></i> E2E</span>' : ''}
+                  ${d.requireEmail ? '<span class="badge badge-email"><i data-lucide="mail" style="width:12px;height:12px;"></i></span>' : ''}
                 </h3>
                 <p>${d.description || ''}</p>
                 <div class="doc-meta-row">
@@ -748,7 +781,11 @@ async function openDoc(slug) {
     }
     showAuth(doc);
   } else {
-    // No password needed — open directly
+    // No password needed — but check email gate
+    if (doc.requireEmail) {
+      const email = await getEmailGate(doc);
+      if (!email) return;
+    }
     await fetchDoc(slug, null);
   }
 }
@@ -774,6 +811,12 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
   btn.textContent = '验证中...';
 
   try {
+    // Check email gate after password
+    const authDoc = docsData.find(d => d.slug === currentSlug);
+    if (authDoc && authDoc.requireEmail) {
+      const email = await getEmailGate(authDoc);
+      if (!email) return;
+    }
     await fetchDoc(currentSlug, pwd);
     savePassword('doc_' + currentSlug, pwd, DOC_TTL);
     closeAuth();
@@ -810,6 +853,45 @@ async function fetchDoc(slug, password) {
   const data = await res.json();
   lastDocRaw = data;
   renderDoc(data);
+}
+
+// ===== Email Gate =====
+let emailResolve = null;
+function showEmailGate(doc) {
+  document.getElementById('email-doc-title').textContent = 'Enter your email to access: ' + doc.title;
+  document.getElementById('email-input').value = '';
+  document.getElementById('email-modal').classList.add('active');
+  setTimeout(() => document.getElementById('email-input').focus(), 100);
+}
+function closeEmailGate() {
+  document.getElementById('email-modal').classList.remove('active');
+  if (emailResolve) { emailResolve(null); emailResolve = null; }
+}
+document.getElementById('email-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email-input').value.trim();
+  if (!email) return;
+  document.getElementById('email-modal').classList.remove('active');
+  // Store lead
+  fetch('/api/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: currentSlug, email })
+  }).catch(() => {});
+  if (emailResolve) { emailResolve(email); emailResolve = null; }
+});
+
+function getEmailGate(doc) {
+  // Check if already provided email for this doc (session)
+  const stored = sessionStorage.getItem('pp_email_' + doc.slug);
+  if (stored) return Promise.resolve(stored);
+  return new Promise(r => {
+    emailResolve = (email) => {
+      if (email) sessionStorage.setItem('pp_email_' + doc.slug, email);
+      r(email);
+    };
+    showEmailGate(doc);
+  });
 }
 
 let pendingE2EData = null;
@@ -906,12 +988,18 @@ async function renderDoc(data) {
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
 
-  // Track doc view (Vercel Analytics + KV counter)
+  // Track doc view (Vercel Analytics + KV counter + notification)
   if (window.va) window.va('event', { name: 'doc_view', data: { slug: currentSlug, title: data.title } });
+  const viewEmail = sessionStorage.getItem('pp_email_' + currentSlug) || null;
   fetch('/api/views', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ slug: currentSlug })
+    body: JSON.stringify({
+      slug: currentSlug,
+      title: data.title,
+      email: viewEmail,
+      notify: true
+    })
   }).then(r => r.json()).then(d => {
     if (d.views) viewCounts[currentSlug] = d.views;
   }).catch(() => {});
@@ -939,8 +1027,25 @@ async function renderDoc(data) {
     mermaid.run({ nodes: docBody.querySelectorAll('.mermaid') });
   }
 
+  // Dynamic watermark for protected docs
+  const existingWM = docBody.parentElement.querySelector('.watermark-overlay');
+  if (existingWM) existingWM.remove();
+  const docMeta = docsData.find(d => d.slug === currentSlug);
+  if (docMeta && (docMeta.locked || docMeta.encrypted || docMeta.requireEmail)) {
+    const wmEmail = sessionStorage.getItem('pp_email_' + currentSlug) || '';
+    const wmText = wmEmail || new Date().toISOString().slice(0, 10);
+    const wm = document.createElement('div');
+    wm.className = 'watermark-overlay';
+    wm.setAttribute('data-watermark', wmText);
+    docBody.parentElement.style.position = 'relative';
+    docBody.parentElement.appendChild(wm);
+  }
+
   // Render Lucide icons in doc view
   if (window.lucide) lucide.createIcons();
+
+  // Reading depth tracker
+  setupReadingTracker(currentSlug);
 
   // Build TOC from headings
   buildTOC();
@@ -997,6 +1102,50 @@ window.addEventListener('popstate', (e) => {
     renderGrid();
   }
 });
+
+// ===== Reading Depth Tracker =====
+let readingTrackerId = null;
+let maxReadingDepth = 0;
+let readingStartTime = 0;
+
+function setupReadingTracker(slug) {
+  maxReadingDepth = 0;
+  readingStartTime = Date.now();
+
+  // Remove old listener
+  if (readingTrackerId) {
+    window.removeEventListener('scroll', readingTrackerId);
+  }
+
+  const docContent = document.getElementById('doc-content');
+  function onScroll() {
+    const rect = docContent.getBoundingClientRect();
+    const visible = window.innerHeight;
+    const total = docContent.scrollHeight;
+    const scrolled = Math.max(0, -rect.top + visible);
+    const pct = Math.min(100, Math.round((scrolled / total) * 100));
+    if (pct > maxReadingDepth) maxReadingDepth = pct;
+  }
+  readingTrackerId = onScroll;
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Report on leave
+  function reportReading() {
+    const duration = Math.round((Date.now() - readingStartTime) / 1000);
+    const email = sessionStorage.getItem('pp_email_' + slug) || null;
+    navigator.sendBeacon('/api/reading', JSON.stringify({
+      slug, depth: maxReadingDepth, duration, email
+    }));
+  }
+  // Use visibilitychange instead of beforeunload for reliability
+  document.addEventListener('visibilitychange', function handler() {
+    if (document.visibilityState === 'hidden' && currentSlug === slug) {
+      reportReading();
+      document.removeEventListener('visibilitychange', handler);
+    }
+  });
+}
 
 // ===== TOC Builder + Scroll Spy =====
 function buildTOC() {

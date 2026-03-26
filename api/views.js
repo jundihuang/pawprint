@@ -1,13 +1,9 @@
-// View counter using Vercel KV (Upstash Redis REST API)
-// Env vars: KV_REST_API_URL, KV_REST_API_TOKEN (auto-set by Vercel KV)
+// View counter + notification log using Vercel KV (Upstash Redis REST API)
 
 async function kvRequest(url, token, command) {
-  const res = await fetch(`${url}`, {
+  const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(command),
   });
   const data = await res.json();
@@ -15,7 +11,6 @@ async function kvRequest(url, token, command) {
 }
 
 module.exports = async function handler(req, res) {
-  // Support both prefixed and standard env var names
   const kvUrl = process.env.KV_REST_API_URL || process.env.pawprint_KV_REST_API_URL;
   const kvToken = process.env.KV_REST_API_TOKEN || process.env.pawprint_KV_REST_API_TOKEN;
 
@@ -23,19 +18,43 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ error: 'KV not configured', views: {} });
   }
 
-  // POST = increment view for a slug
+  // POST = increment view + log notification
   if (req.method === 'POST') {
-    const { slug } = req.body || {};
+    const { slug, title, email, notify } = req.body || {};
     if (!slug) return res.status(400).json({ error: 'Missing slug' });
 
     const count = await kvRequest(kvUrl, kvToken, ['HINCRBY', 'pawprint:views', slug, 1]);
+
+    // Log view event for notifications
+    if (notify) {
+      const event = JSON.stringify({
+        slug,
+        title: title || slug,
+        email: email || 'anonymous',
+        ts: new Date().toISOString(),
+        ip: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
+        ua: (req.headers['user-agent'] || '').slice(0, 100)
+      });
+      // Keep last 50 events
+      await kvRequest(kvUrl, kvToken, ['LPUSH', 'pawprint:events', event]);
+      await kvRequest(kvUrl, kvToken, ['LTRIM', 'pawprint:events', 0, 49]);
+    }
+
     return res.status(200).json({ slug, views: count });
   }
 
-  // GET = get all view counts
+  // GET = get all view counts or recent events
   if (req.method === 'GET') {
+    const type = req.query.type;
+
+    if (type === 'events') {
+      const events = await kvRequest(kvUrl, kvToken, ['LRANGE', 'pawprint:events', 0, 19]);
+      return res.status(200).json({
+        events: (events || []).map(e => { try { return JSON.parse(e); } catch { return e; } })
+      });
+    }
+
     const result = await kvRequest(kvUrl, kvToken, ['HGETALL', 'pawprint:views']);
-    // Redis returns flat array: [key, val, key, val, ...]
     const views = {};
     if (Array.isArray(result)) {
       for (let i = 0; i < result.length; i += 2) {

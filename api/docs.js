@@ -34,7 +34,8 @@ module.exports = function handler(req, res) {
       locked: !!d.password,
       burn: !!d.expiresAt,
       expiresAt: d.expiresAt || null,
-      encrypted: !!d.encrypted
+      encrypted: !!d.encrypted,
+      requireEmail: !!d.requireEmail
     }));
 
   res.status(200).json({
