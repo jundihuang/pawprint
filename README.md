@@ -45,14 +45,53 @@ PawPrint 是一个**私密文档分享工具**。
 
 > **"帮我搭建一个 PawPrint 文档分享站。"**
 
-Agent 会一步步引导你完成。你需要准备的只有：
+Agent 会一步步引导你完成。你需要提前准备好以下账号和权限：
 
-1. **一个 GitHub 账号** — [github.com](https://github.com) 免费注册
-   - GitHub 就像一个"代码网盘"，PawPrint 的文档存在这里
-2. **一个 Vercel 账号** — [vercel.com](https://vercel.com) 用 GitHub 账号一键登录
-   - Vercel 是一个免费的网站托管服务，让你的 PawPrint 变成一个可以访问的网址
+### 1️⃣ GitHub 账号 + Token
 
-注册完告诉 Agent，它会帮你搞定剩下的一切。
+PawPrint 的文档存在 GitHub 仓库里。Agent 需要一个 Token 才能帮你创建仓库和推送文档。
+
+1. 注册/登录 [github.com](https://github.com)（免费）
+2. 打开 [github.com/settings/tokens](https://github.com/settings/tokens?type=beta)
+3. 点 **"Generate new token"** → **Fine-grained token**
+4. 设置：
+   - Token name：`pawprint`
+   - Expiration：选 90 天或更长
+   - Repository access：**All repositories**
+   - Permissions → Repository permissions：
+     - **Contents**: Read and write
+     - **Metadata**: Read-only
+5. 点 **Generate token** → 复制 token（以 `github_pat_` 开头）
+6. 在 OpenClaw 的服务器上运行：
+   ```
+   echo "你的token" | gh auth login --with-token
+   ```
+   或者直接告诉 Agent："帮我配置 GitHub token"，把 token 发给它。
+
+### 2️⃣ Vercel 账号 + Token
+
+Vercel 让你的 PawPrint 变成一个可以访问的网址（比如 `your-docs.vercel.app`）。
+
+1. 打开 [vercel.com](https://vercel.com) → 用 GitHub 账号登录（一键）
+2. 打开 [vercel.com/account/tokens](https://vercel.com/account/tokens)
+3. 点 **Create** → 名字填 `pawprint` → 点 **Create Token**
+4. 复制 token（以 `vcp_` 开头）
+5. 把 token 发给 Agent
+
+### 3️⃣ 告诉 Agent 开始搭建
+
+把 GitHub 和 Vercel 的 token 都准备好后，告诉 Agent：
+
+> "帮我搭建 PawPrint，GitHub token 是 xxx，Vercel token 是 xxx。"
+
+Agent 会自动：
+- ✅ 创建 GitHub 私有仓库
+- ✅ 部署到 Vercel
+- ✅ 配置自动部署（以后 push 自动更新）
+- ✅ 安装 PawPrint 发布技能
+- ✅ 给你一个可访问的网址
+
+> ⚠️ **安全提醒：** Token 只需要提供一次。Agent 配置好后会存在服务器上，以后不需要再给。不要把 token 发到公开群聊里。
 
 ### 如果你是开发者
 
