@@ -630,6 +630,16 @@ function renderDoc(data) {
   const html = marked.parse(data.content);
   document.getElementById('doc-content').innerHTML = html;
 
+  // Fix anchor links — scroll within doc instead of changing URL
+  document.getElementById('doc-content').querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = decodeURIComponent(a.getAttribute('href').slice(1));
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('doc-view').style.display = 'block';
 
