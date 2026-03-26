@@ -67,34 +67,38 @@ After user confirms, proceed to publish.
 
 ### Quick Publish Prompt
 
-When the user triggers publish without enough detail, send ONE message with all options:
+When the user triggers publish, send ONE message with numbered options. User replies with numbers to select:
 
 ```
 📄 发布到 PawPrint
 
-我帮你整理了以下信息，请确认或修改：
+标题：{自动提取}
+描述：{自动生成}
 
-1️⃣ 标题：{自动提取}
-2️⃣ 描述：{自动生成一句话}
-3️⃣ 分类：Projects ← 可选：Areas / Resources / Archives
-4️⃣ 保护：🔓 无
+选择配置（回复数字，可多选如 1,3,5）：
 
-可选保护配置（可叠加）：
-  🔒 密码 — 设置文档独立密码
-  🛡️ E2E 加密 — 端到端加密，密钥通过链接传递，服务器零知识
-  📧 邮箱收集 — 读者必须输入邮箱才能查看
-  📜 NDA 签署 — 读者必须同意保密协议才能查看（可自定义协议内容）
-  🔥 限时过期 — 文档到期自动失效（可选 1h / 24h / 7d / 自定义）
-  💧 水印 — 受保护文档自动添加（密码/加密/邮箱任一开启即生效）
+1. 📂 项目  2. 📖 领域  3. 📚 资源  4. 📦 归档
+5. 🔒 密码  6. 🛡️ E2E加密  7. 📧 邮箱收集
+8. 📜 NDA签署  9. 🔥 限时过期
 
-回复示例：
-• "ok" → 用当前设置直接发布
-• "分类改资源" → 只改分类
-• "加密码 abc123" → 添加密码
-• "E2E加密" → 自动生成密钥，加密发布
-• "密码 abc + 邮箱 + NDA" → 多项叠加
-• "限时 24h + 邮箱" → 24小时后过期 + 邮箱收集
+默认：1（项目，无保护）→ 回复 ok 直接发布
 ```
+
+#### Parse Rules
+- "ok" / "发" → publish with default (category=projects, no protection)
+- "3" → category=resources, no protection
+- "1,5,7" → category=projects + password + email gate
+- "2,6" → category=areas + E2E encryption
+- "1,5,7,8,9" → projects + password + email + NDA + burn
+
+#### Follow-up (only when needed)
+After user selects, ask ONLY for items that need extra input:
+- Selected 5 (password) → "密码设什么？"
+- Selected 6 (E2E) → auto-generate key, no need to ask
+- Selected 9 (burn) → "过期时间？1. 1小时  2. 24小时  3. 7天  4. 自定义"
+- Selected 8 (NDA) → use default NDA text unless user specifies custom
+
+Then confirm and publish. Maximum 2 round-trips total.
 
 ### Smart Defaults
 - Auto-detect title from first `#` heading
