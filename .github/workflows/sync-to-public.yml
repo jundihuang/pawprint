@@ -15,26 +15,29 @@ jobs:
 
       - name: Clean private content
         run: |
-          # Remove private docs
           rm -rf docs/projects/* docs/areas/* docs/resources/* docs/archives/*
           rm -f docs.config.json
           rm -rf .vercel
 
-          # Copy example content
           cp .github/public-template/docs.config.json docs.config.json
           cp -r .github/public-template/docs/* docs/
 
-          # Remove the sync workflow itself and templates from public repo
           rm -rf .github
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PUBLIC_REPO_DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Push to public repo
-        uses: cpina/github-action-push-to-another-repository@main
         env:
-          SSH_DEPLOY_KEY: ${{ secrets.PUBLIC_REPO_DEPLOY_KEY }}
-        with:
-          source-directory: .
-          destination-github-username: jundihuang
-          destination-repository-name: pawprint
-          target-branch: main
-          commit-message: "sync: ${{ github.event.head_commit.message }}"
-          force: true
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no"
+        run: |
+          git config user.email "jayce9210@gmail.com"
+          git config user.name "Jayce"
+          git add -A
+          git commit -m "sync: ${{ github.event.head_commit.message }}" --allow-empty
+          git remote add public git@github.com:jundihuang/pawprint.git
+          git push public main --force
