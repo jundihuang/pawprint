@@ -333,23 +333,17 @@
   }
 
   /* ===== Dynamic Watermark ===== */
-  #doc-view { position: relative; }
   .watermark-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none; z-index: 999;
-    overflow: hidden;
-  }
-  .watermark-overlay::before {
-    content: attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark) "    " attr(data-watermark);
-    position: absolute;
-    top: -100%; left: -100%; right: -100%; bottom: -100%;
-    font-size: 15px; font-weight: 500;
-    color: rgba(128,128,128,0.09);
-    transform: rotate(-25deg);
-    white-space: pre-wrap; word-break: break-all;
-    line-height: 4.5; letter-spacing: 8px;
-    pointer-events: none;
+    position: fixed; top: 0; left: 0;
+    width: 200vw; height: 200vh;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-25%, -25%) rotate(-25deg);
+    font-size: 16px; font-weight: 500;
+    color: rgba(128,128,128,0.10);
+    line-height: 5; letter-spacing: 10px;
+    word-break: break-all;
     user-select: none;
+    overflow: hidden;
   }
   @media print { .watermark-overlay { display: none !important; } }
 
@@ -1173,7 +1167,9 @@ async function renderDoc(data) {
     const wmText = wmEmail || new Date().toISOString().slice(0, 16).replace('T', ' ');
     const wm = document.createElement('div');
     wm.className = 'watermark-overlay';
-    wm.setAttribute('data-watermark', wmText);
+    // Generate repeated watermark text to fill the viewport
+    const repeat = (wmText + '          ').repeat(500);
+    wm.textContent = repeat;
     document.body.appendChild(wm);
     console.log('[PawPrint] Watermark applied:', wmText);
   }
