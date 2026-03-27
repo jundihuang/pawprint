@@ -1164,7 +1164,8 @@ async function renderDoc(data) {
   const hasPassword = !docMeta && currentSlug; // direct access to locked doc means it passed password
   if (isProtected || hasPassword) {
     const wmEmail = sessionStorage.getItem('pp_email_' + currentSlug) || '';
-    const wmText = wmEmail || new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const wmAuthor = (docMeta && docMeta.author) || data.author || '';
+    const wmText = wmEmail || ('PawPrint' + (wmAuthor ? ' · ' + wmAuthor : ''));
     const wm = document.createElement('div');
     wm.className = 'watermark-overlay';
     // Generate repeated watermark text to fill the viewport
