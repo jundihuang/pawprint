@@ -2,87 +2,45 @@
   "site": {
     "title": "PawPrint Docs",
     "description": "Private docs, public simplicity.",
-    "password": "beansmile"
+    "password": "demo"
   },
   "categories": [
-    {
-      "id": "projects",
-      "label": "Projects",
-      "icon": "📂",
-      "description": "Time-bound project docs"
-    },
-    {
-      "id": "areas",
-      "label": "Areas",
-      "icon": "📖",
-      "description": "Ongoing areas of responsibility"
-    },
-    {
-      "id": "resources",
-      "label": "Resources",
-      "icon": "📚",
-      "description": "Reference materials & knowledge"
-    },
-    {
-      "id": "archives",
-      "label": "Archives",
-      "icon": "📦",
-      "description": "Completed or inactive"
-    }
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
   ],
   "docs": [
     {
-      "slug": "z1-research",
-      "category": "projects",
-      "title": "Z1 竞品调研报告",
-      "description": "Z1 (Zalify) 竞品深度分析 · ClawMe 视角",
-      "file": "docs/projects/z1-research.md",
-      "password": "beansmile",
-      "icon": "📊",
-      "date": "2026-03-26",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "deerflow-research",
-      "category": "projects",
-      "title": "DeerFlow 调研报告：字节跳动开源 SuperAgent 框架",
-      "description": "DeerFlow 2.0 核心架构、与 OpenClaw / ClawHost 对比分析",
-      "file": "docs/projects/deerflow-research.md",
-      "icon": "🦌",
-      "date": "2026-03-26",
-      "author": "Lisa"
-    },
-    {
-      "slug": "syntax-demo",
+      "slug": "welcome",
       "category": "resources",
-      "title": "PawPrint Feature Demo",
-      "description": "语法高亮 + Mermaid 图表 + 表格渲染测试",
-      "file": "docs/resources/syntax-demo.md",
+      "title": "Welcome to PawPrint",
+      "description": "Everything you need to know to get started",
+      "file": "docs/resources/welcome.md",
+      "icon": "👋",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    },
+    {
+      "slug": "features-demo",
+      "category": "resources",
+      "title": "Feature Demo",
+      "description": "Syntax highlighting, Mermaid diagrams, and more",
+      "file": "docs/resources/features-demo.md",
       "icon": "🎨",
       "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "requireEmail": true
+      "author": "PawPrint Team"
     },
     {
-      "slug": "e2e-test",
-      "category": "resources",
-      "title": "E2E 加密测试",
-      "description": "AES-256-GCM 端到端加密文档演示",
-      "file": "docs/resources/e2e-test.md",
-      "icon": "🔐",
-      "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "encrypted": true
-    },
-    {
-      "slug": "clawme-x-deerflow",
+      "slug": "secret-example",
       "category": "projects",
-      "title": "ClawMe × DeerFlow：引入超级智能体框架的可行性分析",
-      "description": "ClawMe 现状回顾 + DeerFlow 能带来的 4 大能力 + 分阶段落地建议",
-      "file": "docs/projects/clawme-x-deerflow.md",
-      "icon": "🚀",
+      "title": "Password Protected Example",
+      "description": "Try password: secret123",
+      "file": "docs/projects/secret-example.md",
+      "password": "secret123",
+      "icon": "🔒",
       "date": "2026-03-26",
-      "author": "Lisa"
+      "author": "PawPrint Team"
     }
   ]
 }
