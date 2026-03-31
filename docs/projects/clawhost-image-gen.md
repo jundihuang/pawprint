@@ -81,11 +81,11 @@ Response:
 
 ### 2.3 Gemini 生图模型
 
-| 模型 | ID | 特点 |
-|------|-----|------|
-| Fast | `gemini-2.0-flash` | 快速，低成本 |
-| Quality | `gemini-2.0-pro-image` | 高质量，精细 |
-| 最新 | `gemini-2.5-flash` (Nano Banana) | 多图融合、角色一致性 |
+| 模型 | ID | 扣除 Credits | 特点 |
+|------|-----|-------------|------|
+| Fast | `gemini-2.0-flash` | 1 credit | 快速，低成本 |
+| Quality | `gemini-2.0-pro-image` | 3 credits | 高质量，精细 |
+| Premium | `gemini-2.5-flash` (Nano Banana) | 5 credits | 多图融合、角色一致性 |
 
 调用方式：标准 `generateContent` API，设置 `responseModalities: ["TEXT", "IMAGE"]`，返回 `inline_data` 包含 base64 图片。
 
@@ -93,38 +93,42 @@ Response:
 
 ## 3. 计费模型
 
-### 3.1 每日免费额度
+### 3.1 每日免费 Credits 额度
 
-| 用户类型 | 每日免费生图 |
-|---------|------------|
-| Free | 0 张 |
-| Pro | 3 张/天 |
-| Enterprise | 10 张/天 |
+所有 ClawHost 用户都是付费用户（已购 VPS + OpenClaw），因此所有层级都有免费额度：
+
+| 用户类型 | 每日免费 Credits | 可生图量（示例） |
+|---------|----------------|----------------|
+| Free (已购 VPS) | 3 credits/天 | 3 张 Fast 或 1 张 Quality |
+| Pro | 5 credits/天 | 5 张 Fast 或 1 张 Quality + 2 张 Fast |
+| Enterprise | 15 credits/天 | 15 张 Fast 或 3 张 Premium |
 
 ### 3.2 Credits 系统（MVP）
 
-- 每日限额用完后，从 credits 余额扣
+- 每日免费额度用完后，从 credits 余额扣
+- 不同模型扣除不同 credits（Fast=1, Quality=3, Premium=5）
 - **MVP 阶段不做购买功能**，由管理员后台直接发放 credits（前期体验用户）
 - 后续接 Stripe 购买
 
 ### 3.3 扣费流程
 
 ```
-用户发起生图 →
-  检查今日已用次数 (media_usage 表) →
-    已用 < 每日限额 → 免费，调 Gemini →
-    已用 >= 限额 → 检查 credits →
-      有 credits → 扣 1 credit，调 Gemini →
-      无 credits → 返回 "今日额度已用完"
+用户发起生图（选择模型） →
+  计算该模型所需 credits (cost) →
+  查今日已用 credits (media_usage 表 SUM) →
+    今日已用 + cost <= 每日限额 → 免费，调 Gemini →
+    今日已用 + cost > 每日限额 → 检查 credits 余额 →
+      余额 >= cost → 扣 credits，调 Gemini →
+      余额 < cost → 返回 "额度不足"
 ```
 
 ### 3.4 成本估算
 
-| 项 | 成本 |
-|-----|------|
-| Gemini Flash 生图 | ~$0.01-0.02/张 |
-| 卖价（1 credit） | $0.05-0.10/张 |
-| **毛利** | **70-80%** |
+| 模型 | 我们成本 | 扣除 Credits | 定价 (1 credit ≈ $0.05) |
+|------|---------|-------------|------------------------|
+| Fast | ~$0.005/张 | 1 credit ($0.05) | 毛利 90% |
+| Quality | ~$0.02/张 | 3 credits ($0.15) | 毛利 87% |
+| Premium | ~$0.03/张 | 5 credits ($0.25) | 毛利 88% |
 
 ---
 
@@ -226,5 +230,6 @@ apps/api/src/
 | 2026-03-31 | 不用 MJ Proxy，改用 Gemini 官方 API | Jayce |
 | 2026-03-31 | 直连 Gemini API，不走 Spear Proxy | Jayce |
 | 2026-03-31 | 统一媒体生成 API（image + video 共用） | Jayce + Lisa |
-| 2026-03-31 | 每日 3 张免费额度（Pro），MVP 不做 credits 购买 | Jayce |
+| 2026-03-31 | 统一 credits 池，按模型差异化扣费（Fast=1/Quality=3/Premium=5） | Jayce |
+| 2026-03-31 | 所有用户都有每日免费额度（Free=3/Pro=5/Enterprise=15 credits），MVP 不做 credits 购买 | Jayce |
 | 2026-03-31 | 分支策略：从 develop 切分支，PR 到 develop | Jayce |
