@@ -33,7 +33,7 @@
 ```
 用户对话框 → Agent Tool (generate_image)
   → ClawHost API (POST /api/media/generate)
-  → 鉴权 + 每日限额检查 + 扣费
+  → 鉴权 + Credits 检查 + 扣费
   → 直连 Gemini API (我们的 Key)
   → 返回图片 → 对话框展示
 ```
@@ -42,6 +42,7 @@
 - ✅ 直连 Gemini API（不走 Spear Proxy），减少依赖
 - ✅ API Key 由 ClawHost 官方持有，用户不接触
 - ✅ 统一媒体生成 API，支持未来扩展视频/多 provider
+- ✅ 统一 Credits 系统，跨服务通用（生图、生视频、TTS 等共用一个 credits 池）
 
 ### 2.2 统一 API 设计
 
@@ -53,7 +54,7 @@ Request:
   "type": "image",              // "image" | "video" (Phase 2)
   "provider": "gemini",         // "gemini" | "dalle" | "flux" (未来)
   "prompt": "一只穿宇航服的猫",
-  "model": "fast",              // "fast" (Flash) | "quality" (Pro)
+  "model": "fast",              // "fast" (Flash) | "quality" (Pro) | "premium"
   "options": {
     "aspect_ratio": "1:1",
     "style": "photographic"
@@ -93,7 +94,19 @@ Response:
 
 ## 3. 计费模型
 
-### 3.1 每日免费 Credits 额度
+### 3.1 统一 Credits 系统
+
+采用 **统一 Credits 池** 设计，一套 credits 覆盖所有付费服务：
+
+- 🎨 生图（image_gen）
+- 🎬 生视频（video_gen）— Phase 2
+- 🗣️ TTS（tts）— 未来
+- 🌐 翻译（translation）— 未来
+- ... 新增服务只需定义 `service` 名和 credits 消耗量
+
+**用户只需理解一个概念："我有多少 credits"**，充一次到处用。
+
+### 3.2 每日免费 Credits 额度
 
 所有 ClawHost 用户都是付费用户（已购 VPS + OpenClaw），因此所有层级都有免费额度：
 
@@ -103,26 +116,38 @@ Response:
 | Pro | 5 credits/天 | 5 张 Fast 或 1 张 Quality + 2 张 Fast |
 | Enterprise | 15 credits/天 | 15 张 Fast 或 3 张 Premium |
 
-### 3.2 Credits 系统（MVP）
+### 3.3 各服务 Credits 定价
 
-- 每日免费额度用完后，从 credits 余额扣
-- 不同模型扣除不同 credits（Fast=1, Quality=3, Premium=5）
-- **MVP 阶段不做购买功能**，由管理员后台直接发放 credits（前期体验用户）
-- 后续接 Stripe 购买
+| 服务 | 动作 | Credits 消耗 |
+|------|------|-------------|
+| image_gen | generate (fast) | 1 credit |
+| image_gen | generate (quality) | 3 credits |
+| image_gen | generate (premium) | 5 credits |
+| video_gen | generate (short) | 10 credits |
+| video_gen | generate (medium) | 20 credits |
+| tts | synthesize | 1 credit |
 
-### 3.3 扣费流程
+### 3.4 扣费流程
 
 ```
-用户发起生图（选择模型） →
-  计算该模型所需 credits (cost) →
-  查今日已用 credits (media_usage 表 SUM) →
-    今日已用 + cost <= 每日限额 → 免费，调 Gemini →
+用户发起服务请求（如生图，选择模型） →
+  计算所需 credits (cost) →
+  查今日已用 credits (credit_transactions 表 SUM) →
+    今日已用 + cost <= 每日限额 → 免费，执行服务 →
     今日已用 + cost > 每日限额 → 检查 credits 余额 →
-      余额 >= cost → 扣 credits，调 Gemini →
+      余额 >= cost → 扣 credits，执行服务 →
       余额 < cost → 返回 "额度不足"
 ```
 
-### 3.4 成本估算
+### 3.5 MVP 阶段
+
+- ✅ 每日免费额度
+- ✅ Credits 余额扣费
+- ✅ 管理员后台发放 credits（前期体验用户）
+- ✅ 用量记录
+- ❌ 不做 credits 购买（后续接 Stripe）
+
+### 3.6 成本估算（生图）
 
 | 模型 | 我们成本 | 扣除 Credits | 定价 (1 credit ≈ $0.05) |
 |------|---------|-------------|------------------------|
@@ -134,35 +159,77 @@ Response:
 
 ## 4. 数据库设计
 
-### media_usage 表
+### 4.1 credit_transactions 表（统一账本）
+
+所有 credits 增减操作记录在一张表中，完整审计链：
 
 ```sql
-CREATE TABLE media_usage (
+CREATE TABLE credit_transactions (
   id SERIAL PRIMARY KEY,
   user_id TEXT NOT NULL,
-  type TEXT NOT NULL,            -- 'image' | 'video'
-  provider TEXT NOT NULL,        -- 'gemini' | 'dalle'
-  model TEXT,
-  prompt TEXT,
-  result_url TEXT,
-  credits_used INTEGER DEFAULT 0,
-  is_free BOOLEAN DEFAULT false, -- 是否走每日免费额度
+  type TEXT NOT NULL,            -- 'daily_grant' | 'admin_grant' | 'purchase' | 'consumption' | 'refund' | 'expiry'
+  amount INTEGER NOT NULL,       -- 正数=增加，负数=扣除
+  balance_after INTEGER NOT NULL, -- 操作后余额（方便快速查）
+  
+  -- 通用服务字段（消费时填写）
+  service TEXT,                  -- 'image_gen' | 'video_gen' | 'tts' | 'stt' | 'translation' | ...
+  action TEXT,                   -- 'generate' | 'upscale' | 'edit' | 'synthesize' | ...
+  
+  -- 服务详情（JSON，灵活扩展不同服务的特有字段）
+  metadata JSONB,                -- { provider, model, prompt, result_url, aspect_ratio, ... }
+  
+  -- 充值来源（充值时填写）
+  source TEXT,                   -- 'stripe' | 'admin' | 'system' | 'referral'
+  reference_id TEXT,             -- Stripe payment_id / admin 备注
+  
+  note TEXT,                     -- 可选备注
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 索引
+CREATE INDEX idx_credit_tx_user ON credit_transactions(user_id);
+CREATE INDEX idx_credit_tx_user_date ON credit_transactions(user_id, created_at);
+CREATE INDEX idx_credit_tx_service ON credit_transactions(service, created_at);
 ```
 
-### user_credits 表
+### 4.2 user_credit_balances 表（快速查余额）
+
+冗余但高效，避免每次 SUM：
 
 ```sql
-CREATE TABLE user_credits (
-  id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL UNIQUE,
-  balance INTEGER DEFAULT 0,     -- 当前余额
-  total_granted INTEGER DEFAULT 0,
-  total_used INTEGER DEFAULT 0,
+CREATE TABLE user_credit_balances (
+  user_id TEXT PRIMARY KEY,
+  balance INTEGER DEFAULT 0,       -- 当前购买/发放的 credits 余额
+  daily_used INTEGER DEFAULT 0,    -- 今日已用（所有服务合计）
+  daily_limit INTEGER DEFAULT 3,   -- 每日免费额度（按用户等级设）
+  daily_reset_at DATE DEFAULT CURRENT_DATE,
   updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
+
+### 4.3 账本记录示例
+
+```
+| type          | amount | balance_after | service    | action   | metadata                              |
+|---------------|--------|---------------|------------|----------|---------------------------------------|
+| daily_grant   | +5     | 5             | -          | -        | -                                     |
+| consumption   | -1     | 4             | image_gen  | generate | { model: "fast", prompt: "..." }      |
+| consumption   | -3     | 1             | image_gen  | generate | { model: "quality", prompt: "..." }   |
+| admin_grant   | +50    | 51            | -          | -        | { reason: "beta tester" }             |
+| purchase      | +100   | 151           | -          | -        | { stripe_id: "pi_xxx" }              |
+| consumption   | -5     | 146           | image_gen  | generate | { model: "premium", prompt: "..." }   |
+| refund        | +5     | 151           | image_gen  | generate | { reason: "generation failed" }       |
+| consumption   | -10    | 141           | video_gen  | generate | { model: "short", duration: 30 }      |
+| consumption   | -1     | 140           | tts        | synthesize| { voice: "alloy", chars: 500 }       |
+```
+
+### 4.4 设计优势
+
+1. **完整审计链** — 每一笔增减都有迹可查
+2. **跨服务通用** — 新增服务只需定义 `service` + `action` + credits 消耗量，无需改表
+3. **灵活 metadata** — JSONB 字段适应不同服务的特有数据，不污染主表结构
+4. **对账简单** — `SUM(amount) WHERE user_id = x` = 当前余额（与 balance_after 交叉验证）
+5. **`balance_after`** — 冗余字段，无需每次 SUM，直接读最新一条
 
 ---
 
@@ -172,14 +239,19 @@ CREATE TABLE user_credits (
 apps/api/src/
 ├── routes/media.ts                    # POST /api/media/generate
 ├── controllers/media/
-│   ├── generateMedia.ts               # 统一入口：鉴权 → 限额 → 分发
+│   ├── generateMedia.ts               # 统一入口：鉴权 → Credits 检查 → 分发
 │   ├── providers/
 │   │   ├── geminiImage.ts             # Gemini 生图实现
 │   │   └── geminiVideo.ts             # (Phase 2)
 │   └── helpers/
-│       ├── checkQuota.ts              # 每日限额 + credits 检查
-│       └── recordUsage.ts             # 记录用量
-├── db/schema.ts                       # 新增: media_usage, user_credits
+│       ├── checkCredits.ts            # 每日限额 + credits 余额检查
+│       └── recordTransaction.ts       # 写入 credit_transactions
+├── controllers/credits/
+│   ├── getBalance.ts                  # 查询用户 credits 余额
+│   ├── grantCredits.ts               # 管理员发放 credits
+│   └── getUsageHistory.ts            # 用量历史
+├── routes/credits.ts                  # GET /api/credits, POST /api/credits/grant
+├── db/schema.ts                       # 新增: credit_transactions, user_credit_balances
 ```
 
 ---
@@ -205,12 +277,14 @@ apps/api/src/
 
 | # | 任务 | 角色 | 预估 |
 |---|------|------|------|
-| 1 | DB migration：`media_usage` + `user_credits` 表 | Backend | 0.5d |
-| 2 | `POST /api/media/generate` API（鉴权+限额+Gemini调用） | Backend | 1-2d |
-| 3 | Agent Tool：`generate_image` 调 ClawHost API | Backend | 0.5d |
-| 4 | 前端对话框生图展示 + 进度 | Frontend | 1d |
-| 5 | 前端 credits/额度显示 | Frontend | 0.5d |
-| | **合计** | | **3.5-4.5d** |
+| 1 | DB migration：`credit_transactions` + `user_credit_balances` 表 | Backend | 0.5d |
+| 2 | Credits 扣费逻辑（checkCredits + recordTransaction） | Backend | 1d |
+| 3 | `POST /api/media/generate` API（鉴权+扣费+Gemini调用） | Backend | 1-2d |
+| 4 | Credits 管理 API（查余额 + 管理员发放） | Backend | 0.5d |
+| 5 | Agent Tool：`generate_image` 调 ClawHost API | Backend | 0.5d |
+| 6 | 前端对话框生图展示 + 进度 | Frontend | 1d |
+| 7 | 前端 credits/额度显示 | Frontend | 0.5d |
+| | **合计** | | **5-6d** |
 
 ### Phase 2：生视频 + Credits 购买
 
@@ -230,6 +304,7 @@ apps/api/src/
 | 2026-03-31 | 不用 MJ Proxy，改用 Gemini 官方 API | Jayce |
 | 2026-03-31 | 直连 Gemini API，不走 Spear Proxy | Jayce |
 | 2026-03-31 | 统一媒体生成 API（image + video 共用） | Jayce + Lisa |
-| 2026-03-31 | 统一 credits 池，按模型差异化扣费（Fast=1/Quality=3/Premium=5） | Jayce |
-| 2026-03-31 | 所有用户都有每日免费额度（Free=3/Pro=5/Enterprise=15 credits），MVP 不做 credits 购买 | Jayce |
+| 2026-03-31 | 统一 Credits 池（账本模式），跨服务通用，按模型差异化扣费 | Jayce |
+| 2026-03-31 | 所有用户都有每日免费额度（Free=3/Pro=5/Enterprise=15 credits） | Jayce |
+| 2026-03-31 | MVP 不做 credits 购买，管理员后台直接发放 | Jayce |
 | 2026-03-31 | 分支策略：从 develop 切分支，PR 到 develop | Jayce |
