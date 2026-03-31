@@ -645,6 +645,7 @@ document.getElementById('search-input').addEventListener('input', (e) => {
 // ===== Direct doc access (bypass site gate for non-password docs) =====
 async function tryDirectAccess(slug) {
   try {
+    // First try without password (works for public docs)
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -654,13 +655,26 @@ async function tryDirectAccess(slug) {
       const data = await res.json();
       lastDocRaw = data;
       currentSlug = slug;
+      document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('site-gate').style.display = 'none';
       document.getElementById('list-view').style.display = 'none';
       document.getElementById('doc-view').style.display = 'block';
       renderDoc(data);
       return true;
     }
-    // 401 = needs password, fall through to gate
+    // 401 = needs doc password — show doc password modal directly (skip site gate)
+    if (res.status === 401) {
+      currentSlug = slug;
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('site-gate').style.display = 'none';
+      // Show doc password modal
+      document.getElementById('auth-doc-title').textContent = slug;
+      document.getElementById('auth-pwd').value = '';
+      document.getElementById('auth-error').style.display = 'none';
+      document.getElementById('auth-modal').classList.add('active');
+      setTimeout(() => document.getElementById('auth-pwd').focus(), 100);
+      return true; // handled — don't fall through to site gate
+    }
     return false;
   } catch { return false; }
 }
