@@ -83,6 +83,17 @@
       "icon": "🚀",
       "date": "2026-03-26",
       "author": "Lisa"
+    },
+    {
+      "slug": "clawhost-image-gen",
+      "category": "projects",
+      "title": "ClawHost 生图功能方案",
+      "description": "Gemini API 生图集成方案 · 统一媒体生成 API · Credits 计费设计",
+      "file": "docs/projects/clawhost-image-gen.md",
+      "password": "beansmile",
+      "icon": "🎨",
+      "date": "2026-03-31",
+      "author": "Lisa (PM)"
     }
   ]
 }
