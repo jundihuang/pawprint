@@ -1,18 +1,18 @@
-# Geofy — 让你的 Shopify 店铺被 AI 搜索引擎看见
+# Geoify — 让你的 Shopify 店铺被 AI 搜索引擎看见
 
 > 当消费者问 ChatGPT "推荐一款轻量跑鞋"，你的产品会出现在答案里吗？
 
 ---
 
-## 什么是 Geofy？
+## 什么是 Geoify？
 
-**Geofy** 是一款专为 Shopify 商家打造的 **GEO（Generative Engine Optimization）优化插件**。
+**Geoify** 是一款专为 Shopify 商家打造的 **GEO（Generative Engine Optimization）优化插件**。
 
-简单说：传统 SEO 让 Google 找到你，**Geofy 让 AI 搜索引擎推荐你**。
+简单说：传统 SEO 让 Google 找到你，**Geoify 让 AI 搜索引擎推荐你**。
 
 越来越多消费者正在通过 ChatGPT Search、Google AI Overview、Perplexity 等 AI 搜索来发现和选购产品。这些 AI 引擎不再只看关键词——它们需要真正「理解」你的产品，才会把你推荐给消费者。
 
-**Geofy 做的，就是让 AI 读懂你的店铺。**
+**Geoify 做的，就是让 AI 读懂你的店铺。**
 
 ---
 
@@ -20,7 +20,7 @@
 
 ### 1. 产品智能优化（Catalog Optimization）
 
-Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示该产品在 AI 搜索中的表现。
+Geoify 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示该产品在 AI 搜索中的表现。
 
 **你可以做什么：**
 
@@ -29,13 +29,13 @@ Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示
 - ⚡ **一键应用** — 选中满意的建议，点击 Apply，自动更新到你的 Shopify 店铺
 - 👀 **预览模式** — 不确定？可以先预览效果，再决定是否应用
 
-优化后，Geofy 自动为产品生成符合国际标准（Schema.org）的结构化数据，让 AI 搜索引擎更精准地理解你的产品信息——材质、颜色、尺码、价格、库存，一目了然。
+优化后，Geoify 自动为产品生成符合国际标准（Schema.org）的结构化数据，让 AI 搜索引擎更精准地理解你的产品信息——材质、颜色、尺码、价格、库存，一目了然。
 
 ### 2. LLMs.txt — 你的店铺名片
 
 [LLMs.txt](https://llmstxt.org/) 是一个新兴标准，相当于给 AI 搜索引擎的「店铺名片」。
 
-安装 Geofy 后，你的店铺会自动拥有一个 `yourstore.com/llms.txt` 地址，包含：
+安装 Geoify 后，你的店铺会自动拥有一个 `yourstore.com/llms.txt` 地址，包含：
 
 - 🏪 店铺介绍
 - 🛍️ 热卖商品和完整产品目录
@@ -62,13 +62,13 @@ Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示
 | 📂 分类页 | 分类介绍和产品列表 |
 | 📰 博客 | 文章列表和详情 |
 
-**操作极简**：在 Geofy 控制台里逐个开关即可，不需要改动你的店铺主题代码。Geofy 还会自动清理主题自带的冲突标记，确保数据干净一致。
+**操作极简**：在 Geoify 控制台里逐个开关即可，不需要改动你的店铺主题代码。Geoify 还会自动清理主题自带的冲突标记，确保数据干净一致。
 
 ---
 
 ## 📈 AI 流量监控
 
-装上 Geofy 后，你可以在 Dashboard 实时看到：
+装上 Geoify 后，你可以在 Dashboard 实时看到：
 
 - 哪些 AI 引擎在访问你的店铺（ChatGPT、Google、Perplexity 等）
 - 哪些产品最受 AI 关注
@@ -78,7 +78,7 @@ Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示
 
 ---
 
-## 💡 为什么选择 Geofy？
+## 💡 为什么选择 Geoify？
 
 ### 即刻见效
 
@@ -99,7 +99,7 @@ Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示
 ## 🎬 使用流程
 
 ```
-安装 Geofy
+安装 Geoify
     ↓
 开启 AI Traffic Booster → 全站自动添加结构化标记
     ↓
@@ -141,6 +141,6 @@ Geofy 为你的每个产品打一个 **GEO Score（0-100 分）**，直观展示
 
 ---
 
-> **Geofy — GEO for Shopify.**
+> **Geoify — GEO for Shopify.**
 >
 > AI 搜索时代已经到来。你的产品准备好被推荐了吗？
