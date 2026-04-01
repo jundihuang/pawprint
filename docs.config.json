@@ -94,6 +94,16 @@
       "icon": "🎨",
       "date": "2026-03-31",
       "author": "Lisa (PM)"
+    },
+    {
+      "slug": "geofy-product-intro",
+      "category": "projects",
+      "title": "Geofy — 让你的 Shopify 店铺被 AI 搜索引擎看见",
+      "description": "Shopify GEO 优化插件产品说明 · AI 驱动的结构化数据优化 + LLMs.txt 生成",
+      "file": "docs/projects/geofy-product-intro.md",
+      "icon": "🔍",
+      "date": "2026-04-01",
+      "author": "Lisa (PM)"
     }
   ]
 }
