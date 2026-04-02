@@ -128,6 +128,17 @@
       "author": "Lisa (PM)"
     },
     {
+      "slug": "iwish-ai-proposal-c",
+      "category": "projects",
+      "title": "备选方案 C：AI 工具集 — 跨境电商 AI 工具箱",
+      "description": "7 个独立 AI 小工具 · 广告生成/申诉信/Feeds优化/博客生成等 · 轻量快速上线",
+      "file": "docs/projects/iwish-ai-proposal-c.md",
+      "password": "beansmile",
+      "icon": "🧰",
+      "date": "2026-04-02",
+      "author": "Lisa (PM)"
+    },
+    {
       "slug": "iwish-ai-proposal-b",
       "category": "projects",
       "title": "方案 B：OpsGenie — AI 运营决策中台",
