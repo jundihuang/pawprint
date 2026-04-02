@@ -1,4 +1,4 @@
-# 方案 B：OpsGenie — AI 运营决策中台
+# 方案三：OpsGenie — AI 运营决策中台
 
 > 📅 2026-04-02 · 作者：Lisa (PM)
 > 📎 [返回目录](/docs#iwish-ai-proposal-index)
@@ -167,9 +167,9 @@ OpsGenie：基于你店铺过去两年的黑五数据分析：
 - **Shopify App**（嵌入式）：在 Shopify 后台直接查看健康分和建议
 - **移动端推送**（后期）：关键告警和每日建议推送到手机
 
-## 六、与方案 A 的协同
+## 六、与方案二的协同
 
-如果 AdPilot（方案 A）和 OpsGenie 同时推进：
+如果 AdPilot（方案二）和 OpsGenie 同时推进：
 
 ```
 OpsGenie（决策中台）
@@ -225,4 +225,4 @@ OpsGenie（决策中台）
 
 ---
 
-> 📎 [返回目录](/docs#iwish-ai-proposal-index) · [查看方案 A：AdPilot](/docs#iwish-ai-proposal-a)
+> 📎 [返回目录](/docs#iwish-ai-proposal-index) · [查看方案二：AdPilot](/docs#iwish-ai-proposal-2)

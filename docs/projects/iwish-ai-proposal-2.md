@@ -1,4 +1,4 @@
-# 方案 A：AdPilot — AI 广告投放优化工具
+# 方案二：AdPilot — AI 广告投放优化工具
 
 > 📅 2026-04-02 · 作者：Lisa (PM)
 > 📎 [返回目录](/docs#iwish-ai-proposal-index)
@@ -152,4 +152,4 @@ Day 7+: 优化引擎自动迭代素材和预算 → ROAS 持续提升
 
 ---
 
-> 📎 [返回目录](/docs#iwish-ai-proposal-index) · [查看方案 B：OpsGenie](/docs#iwish-ai-proposal-b)
+> 📎 [返回目录](/docs#iwish-ai-proposal-index) · [查看方案三：OpsGenie](/docs#iwish-ai-proposal-3)
