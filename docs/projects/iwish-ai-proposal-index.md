@@ -65,7 +65,6 @@
 
 - 💰 目标市场：自己投广告的中小 DTC 品牌（不与艾维代投业务冲突）
 - 🔧 产品形态：Shopify App + 独立 SaaS
-- 🏷️ 定价区间：$99-999/月
 
 ### [方案 B：AI 运营决策中台 — OpsGenie](/docs#iwish-ai-proposal-b)
 
@@ -73,13 +72,11 @@
 
 - 💰 目标市场：所有独立站卖家（也可作为艾维增值服务）
 - 🔧 产品形态：Web SaaS + Shopify App
-- 🏷️ 定价区间：$149-999/月
 
 ### [方案 C：AI 工具集 — 跨境电商 AI 工具箱](/docs#iwish-ai-proposal-c)
 
 一组深度对接 Google Ads、GMC、GA4、Amazon API 的 AI 工具，统一品牌，每个解决一个具体痛点。
 
-- 💰 定价区间：$0-299/月（免费增值模式）
 - ⚡ 快速上线，低风险
 - 🌉 作为方案 A/B 的前置验证和用户获取入口
 
