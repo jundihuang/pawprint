@@ -104,6 +104,39 @@
       "icon": "🔍",
       "date": "2026-04-01",
       "author": "Lisa (PM)"
+    },
+    {
+      "slug": "iwish-ai-proposal-index",
+      "category": "projects",
+      "title": "iWish × Beansmile：AI 时代跨境电商产品合作方案",
+      "description": "合作背景 · 市场分析 · 两大方案概览（AdPilot + OpsGenie）· 推荐路径",
+      "file": "docs/projects/iwish-ai-proposal-index.md",
+      "password": "beansmile",
+      "icon": "📋",
+      "date": "2026-04-02",
+      "author": "Lisa (PM)"
+    },
+    {
+      "slug": "iwish-ai-proposal-a",
+      "category": "projects",
+      "title": "方案 A：AdPilot — AI 广告投放优化工具",
+      "description": "AI 素材生成 + 智能出价 + 跨平台归因 · 面向自主投放的跨境卖家",
+      "file": "docs/projects/iwish-ai-proposal-a.md",
+      "password": "beansmile",
+      "icon": "🎯",
+      "date": "2026-04-02",
+      "author": "Lisa (PM)"
+    },
+    {
+      "slug": "iwish-ai-proposal-b",
+      "category": "projects",
+      "title": "方案 B：OpsGenie — AI 运营决策中台",
+      "description": "跨平台数据融合 + 每日 AI 运营建议 + 预测引擎 · 跨境电商的 AI 首席运营官",
+      "file": "docs/projects/iwish-ai-proposal-b.md",
+      "password": "beansmile",
+      "icon": "🧠",
+      "date": "2026-04-02",
+      "author": "Lisa (PM)"
     }
   ]
 }
