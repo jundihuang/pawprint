@@ -2,152 +2,45 @@
   "site": {
     "title": "PawPrint Docs",
     "description": "Private docs, public simplicity.",
-    "password": "beansmile"
+    "password": "demo"
   },
   "categories": [
-    {
-      "id": "projects",
-      "label": "Projects",
-      "icon": "📂",
-      "description": "Time-bound project docs"
-    },
-    {
-      "id": "areas",
-      "label": "Areas",
-      "icon": "📖",
-      "description": "Ongoing areas of responsibility"
-    },
-    {
-      "id": "resources",
-      "label": "Resources",
-      "icon": "📚",
-      "description": "Reference materials & knowledge"
-    },
-    {
-      "id": "archives",
-      "label": "Archives",
-      "icon": "📦",
-      "description": "Completed or inactive"
-    }
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
   ],
   "docs": [
     {
-      "slug": "z1-research",
-      "category": "projects",
-      "title": "Z1 竞品调研报告",
-      "description": "Z1 (Zalify) 竞品深度分析 · ClawMe 视角",
-      "file": "docs/projects/z1-research.md",
-      "password": "beansmile",
-      "icon": "📊",
-      "date": "2026-03-26",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "deerflow-research",
-      "category": "projects",
-      "title": "DeerFlow 调研报告：字节跳动开源 SuperAgent 框架",
-      "description": "DeerFlow 2.0 核心架构、与 OpenClaw / ClawHost 对比分析",
-      "file": "docs/projects/deerflow-research.md",
-      "icon": "🦌",
-      "date": "2026-03-26",
-      "author": "Lisa"
-    },
-    {
-      "slug": "syntax-demo",
+      "slug": "welcome",
       "category": "resources",
-      "title": "PawPrint Feature Demo",
-      "description": "语法高亮 + Mermaid 图表 + 表格渲染测试",
-      "file": "docs/resources/syntax-demo.md",
+      "title": "Welcome to PawPrint",
+      "description": "Everything you need to know to get started",
+      "file": "docs/resources/welcome.md",
+      "icon": "👋",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    },
+    {
+      "slug": "features-demo",
+      "category": "resources",
+      "title": "Feature Demo",
+      "description": "Syntax highlighting, Mermaid diagrams, and more",
+      "file": "docs/resources/features-demo.md",
       "icon": "🎨",
       "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "requireEmail": true
+      "author": "PawPrint Team"
     },
     {
-      "slug": "e2e-test",
-      "category": "resources",
-      "title": "E2E 加密测试",
-      "description": "AES-256-GCM 端到端加密文档演示",
-      "file": "docs/resources/e2e-test.md",
-      "icon": "🔐",
+      "slug": "secret-example",
+      "category": "projects",
+      "title": "Password Protected Example",
+      "description": "Try password: secret123",
+      "file": "docs/projects/secret-example.md",
+      "password": "secret123",
+      "icon": "🔒",
       "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "encrypted": true
-    },
-    {
-      "slug": "clawme-x-deerflow",
-      "category": "projects",
-      "title": "ClawMe × DeerFlow：引入超级智能体框架的可行性分析",
-      "description": "ClawMe 现状回顾 + DeerFlow 能带来的 4 大能力 + 分阶段落地建议",
-      "file": "docs/projects/clawme-x-deerflow.md",
-      "icon": "🚀",
-      "date": "2026-03-26",
-      "author": "Lisa"
-    },
-    {
-      "slug": "clawhost-image-gen",
-      "category": "projects",
-      "title": "ClawHost 生图功能方案",
-      "description": "Gemini API 生图集成方案 · 统一媒体生成 API · Credits 计费设计",
-      "file": "docs/projects/clawhost-image-gen.md",
-      "password": "beansmile",
-      "icon": "🎨",
-      "date": "2026-03-31",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "geofy-product-intro",
-      "category": "projects",
-      "title": "Geoify — 让你的 Shopify 店铺被 AI 搜索引擎看见",
-      "description": "Shopify GEO 优化插件产品说明 · AI 驱动的结构化数据优化 + LLMs.txt 生成",
-      "file": "docs/projects/geofy-product-intro.md",
-      "icon": "🔍",
-      "date": "2026-04-01",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-index",
-      "category": "projects",
-      "title": "iWish × Beansmile：AI 时代跨境电商产品合作方案",
-      "description": "合作背景 · 市场分析 · 三层产品战略（工具集→AdPilot→OpsGenie）",
-      "file": "docs/projects/iwish-ai-proposal-index.md",
-      "password": "beansmile",
-      "icon": "📋",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-1",
-      "category": "projects",
-      "title": "方案一：AI 工具集 — 跨境电商 AI 工具箱",
-      "description": "10 个 AI 工具 · 广告生成/Feeds优化/申诉信/博客/选品等 · 快速上线验证",
-      "file": "docs/projects/iwish-ai-proposal-1.md",
-      "password": "beansmile",
-      "icon": "🧰",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-2",
-      "category": "projects",
-      "title": "方案二：AdPilot — AI 广告投放优化工具",
-      "description": "AI 素材生成 + 智能出价 + 跨平台归因 · 面向自主投放的跨境卖家",
-      "file": "docs/projects/iwish-ai-proposal-2.md",
-      "password": "beansmile",
-      "icon": "🎯",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-3",
-      "category": "projects",
-      "title": "方案三：OpsGenie — AI 运营决策中台",
-      "description": "跨平台数据融合 + 每日 AI 运营建议 + 预测引擎 · 跨境电商的 AI 首席运营官",
-      "file": "docs/projects/iwish-ai-proposal-3.md",
-      "password": "beansmile",
-      "icon": "🧠",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
+      "author": "PawPrint Team"
     }
   ]
 }
