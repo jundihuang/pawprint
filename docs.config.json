@@ -148,6 +148,17 @@
       "icon": "🧠",
       "date": "2026-04-02",
       "author": "Lisa (PM)"
+    },
+    {
+      "slug": "iwish-monica-ai-site-assistant",
+      "category": "projects",
+      "title": "AI 建站助手产品方案 — iWish × Monica 合作落地",
+      "description": "基于 Monica AI 的标准化建站产品 · 1周交付 · 价格降低80% · 多语言内容生成",
+      "file": "docs/projects/iwish-monica-ai-site-assistant.md",
+      "password": "beansmile",
+      "icon": "🚀",
+      "date": "2026-04-07",
+      "author": "Lisa (PM)"
     }
   ]
 }
