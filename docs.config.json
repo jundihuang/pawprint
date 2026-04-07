@@ -159,6 +159,17 @@
       "icon": "🚀",
       "date": "2026-04-07",
       "author": "Lisa (PM)"
+    },
+    {
+      "slug": "iwish-monica-shopify-implementation",
+      "category": "projects",
+      "title": "Shopify + Monica AI 实现方案 — 专注 Shopify 的 AI 增强",
+      "description": "Monica 在 Shopify 建站与运营中的具体应用 · 技术实现细节 · 实施路线图",
+      "file": "docs/projects/iwish-monica-shopify-implementation.md",
+      "password": "beansmile",
+      "icon": "🛍️",
+      "date": "2026-04-07",
+      "author": "Lisa (PM)"
     }
   ]
 }
