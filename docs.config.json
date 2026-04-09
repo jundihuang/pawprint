@@ -96,6 +96,7 @@
       "author": "Lisa (PM)"
     },
     {
+<<<<<<< HEAD
       "slug": "geofy-product-intro",
       "category": "projects",
       "title": "Geoify — 让你的 Shopify 店铺被 AI 搜索引擎看见",
@@ -170,6 +171,17 @@
       "icon": "🛍️",
       "date": "2026-04-07",
       "author": "Lisa (PM)"
+=======
+      "slug": "mothers-day-skincare-google-ads-strategy-outline",
+      "category": "projects",
+      "title": "母亲节护肤礼盒 Google Ads 投放策略大纲",
+      "description": "母亲节护肤礼盒促销活动的完整Google Ads策略框架和执行指南",
+      "file": "docs/projects/mothers-day-skincare-google-ads-strategy-outline.md",
+      "password": "beansmile",
+      "icon": "🎯",
+      "date": "2026-04-09",
+      "author": "Google Ads Orchestrator"
+>>>>>>> 1d2218d (docs: add mothers-day-skincare-google-ads-strategy-outline to projects)
     }
   ]
 }
