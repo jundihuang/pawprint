@@ -96,6 +96,7 @@
       "author": "Lisa (PM)"
     },
     {
+<<<<<<< HEAD
       "slug": "geofy-product-intro",
       "category": "projects",
       "title": "Geoify — 让你的 Shopify 店铺被 AI 搜索引擎看见",
@@ -170,8 +171,7 @@
       "icon": "🛍️",
       "date": "2026-04-07",
       "author": "Lisa (PM)"
-    },
-    {
+=======
       "slug": "mothers-day-skincare-google-ads-strategy-outline",
       "category": "projects",
       "title": "母亲节护肤礼盒 Google Ads 投放策略大纲",
@@ -181,50 +181,7 @@
       "icon": "🎯",
       "date": "2026-04-09",
       "author": "Google Ads Orchestrator"
-    },
-    {
-      "slug": "mothers-day-skincare-google-ads-full-strategy",
-      "category": "projects",
-      "title": "母亲节护肤礼盒 Google Ads 完整投放策略",
-      "description": "10部分全面策略：目标受众、关键词、广告创意、出价策略、预算分配等",
-      "file": "docs/projects/mothers-day-skincare-google-ads-full-strategy.md",
-      "password": "beansmile",
-      "icon": "📋",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-google-ads-executive-summary",
-      "category": "projects",
-      "title": "母亲节护肤礼盒 Google Ads 策略执行摘要",
-      "description": "快速查看版：核心数据概览、三阶段投放策略、关键要点",
-      "file": "docs/projects/mothers-day-skincare-google-ads-executive-summary.md",
-      "password": "beansmile",
-      "icon": "📊",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-keyword-list",
-      "category": "projects",
-      "title": "母亲节护肤礼盒关键词列表",
-      "description": "50+具体关键词，包含匹配类型和出价建议，可直接导入Google Ads",
-      "file": "docs/projects/mothers-day-skincare-keyword-list.csv",
-      "password": "beansmile",
-      "icon": "🔑",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-budget-allocation",
-      "category": "projects",
-      "title": "母亲节护肤礼盒预算分配详细表",
-      "description": "按时间阶段、广告类型、受众的详细分配，周度和日度预算规划",
-      "file": "docs/projects/mothers-day-skincare-budget-allocation.md",
-      "password": "beansmile",
-      "icon": "💰",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
+>>>>>>> 1d2218d (docs: add mothers-day-skincare-google-ads-strategy-outline to projects)
     }
   ]
 }

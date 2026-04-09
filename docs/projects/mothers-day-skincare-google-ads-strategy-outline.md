@@ -58,16 +58,16 @@
 ## 📁 详细文档链接
 
 ### 核心策略文档
-1. **[完整策略文档](./母亲节护肤礼盒Google Ads投放策略.md)** - 10部分全面策略
-2. **[执行摘要](./母亲节护肤礼盒Google Ads策略执行摘要.md)** - 快速查看版
+1. **[完整策略文档](https://pawprint-jayce.vercel.app/docs#mothers-day-skincare-google-ads-full-strategy)** - 10部分全面策略
+2. **[执行摘要](https://pawprint-jayce.vercel.app/docs#mothers-day-skincare-google-ads-executive-summary)** - 快速查看版
 
 ### 执行工具
-3. **[关键词列表](./母亲节关键词列表.csv)** - 50+关键词，可直接导入Google Ads
-4. **[预算分配表](./母亲节预算分配详细表.md)** - 详细财务规划
+3. **[关键词列表](https://pawprint-jayce.vercel.app/docs#mothers-day-skincare-keyword-list)** - 50+关键词，可直接导入Google Ads
+4. **[预算分配表](https://pawprint-jayce.vercel.app/docs#mothers-day-skincare-budget-allocation)** - 详细财务规划
 
 ### 监控优化
-5. **[监控指标仪表板](./母亲节监控指标.md)** - 每日/每周KPI
-6. **[A/B测试计划](./母亲节AB测试计划.md)** - 文案和落地页测试
+5. **[监控指标仪表板](./母亲节监控指标.md)** - 每日/每周KPI（待创建）
+6. **[A/B测试计划](./母亲节AB测试计划.md)** - 文案和落地页测试（待创建）
 
 ## 🗓️ 时间线
 
