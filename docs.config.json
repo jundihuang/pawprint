@@ -2,261 +2,45 @@
   "site": {
     "title": "PawPrint Docs",
     "description": "Private docs, public simplicity.",
-    "password": "beansmile"
+    "password": "demo"
   },
   "categories": [
-    {
-      "id": "projects",
-      "label": "Projects",
-      "icon": "📂",
-      "description": "Time-bound project docs"
-    },
-    {
-      "id": "areas",
-      "label": "Areas",
-      "icon": "📖",
-      "description": "Ongoing areas of responsibility"
-    },
-    {
-      "id": "resources",
-      "label": "Resources",
-      "icon": "📚",
-      "description": "Reference materials & knowledge"
-    },
-    {
-      "id": "archives",
-      "label": "Archives",
-      "icon": "📦",
-      "description": "Completed or inactive"
-    }
+    { "id": "projects", "label": "Projects", "icon": "📂", "description": "Time-bound deliverables" },
+    { "id": "areas", "label": "Areas", "icon": "📖", "description": "Ongoing areas of responsibility" },
+    { "id": "resources", "label": "Resources", "icon": "📚", "description": "Reference materials" },
+    { "id": "archives", "label": "Archives", "icon": "📦", "description": "Completed or inactive" }
   ],
   "docs": [
     {
-      "slug": "z1-research",
-      "category": "projects",
-      "title": "Z1 竞品调研报告",
-      "description": "Z1 (Zalify) 竞品深度分析 · ClawMe 视角",
-      "file": "docs/projects/z1-research.md",
-      "password": "beansmile",
-      "icon": "📊",
-      "date": "2026-03-26",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "deerflow-research",
-      "category": "projects",
-      "title": "DeerFlow 调研报告：字节跳动开源 SuperAgent 框架",
-      "description": "DeerFlow 2.0 核心架构、与 OpenClaw / ClawHost 对比分析",
-      "file": "docs/projects/deerflow-research.md",
-      "icon": "🦌",
-      "date": "2026-03-26",
-      "author": "Lisa"
-    },
-    {
-      "slug": "syntax-demo",
+      "slug": "welcome",
       "category": "resources",
-      "title": "PawPrint Feature Demo",
-      "description": "语法高亮 + Mermaid 图表 + 表格渲染测试",
-      "file": "docs/resources/syntax-demo.md",
+      "title": "Welcome to PawPrint",
+      "description": "Everything you need to know to get started",
+      "file": "docs/resources/welcome.md",
+      "icon": "👋",
+      "date": "2026-03-26",
+      "author": "PawPrint Team"
+    },
+    {
+      "slug": "features-demo",
+      "category": "resources",
+      "title": "Feature Demo",
+      "description": "Syntax highlighting, Mermaid diagrams, and more",
+      "file": "docs/resources/features-demo.md",
       "icon": "🎨",
       "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "requireEmail": true
+      "author": "PawPrint Team"
     },
     {
-      "slug": "e2e-test",
-      "category": "resources",
-      "title": "E2E 加密测试",
-      "description": "AES-256-GCM 端到端加密文档演示",
-      "file": "docs/resources/e2e-test.md",
-      "icon": "🔐",
+      "slug": "secret-example",
+      "category": "projects",
+      "title": "Password Protected Example",
+      "description": "Try password: secret123",
+      "file": "docs/projects/secret-example.md",
+      "password": "secret123",
+      "icon": "🔒",
       "date": "2026-03-26",
-      "author": "Lisa (PM)",
-      "encrypted": true
-    },
-    {
-      "slug": "clawme-x-deerflow",
-      "category": "projects",
-      "title": "ClawMe × DeerFlow：引入超级智能体框架的可行性分析",
-      "description": "ClawMe 现状回顾 + DeerFlow 能带来的 4 大能力 + 分阶段落地建议",
-      "file": "docs/projects/clawme-x-deerflow.md",
-      "icon": "🚀",
-      "date": "2026-03-26",
-      "author": "Lisa"
-    },
-    {
-      "slug": "clawhost-image-gen",
-      "category": "projects",
-      "title": "ClawHost 生图功能方案",
-      "description": "Gemini API 生图集成方案 · 统一媒体生成 API · Credits 计费设计",
-      "file": "docs/projects/clawhost-image-gen.md",
-      "password": "beansmile",
-      "icon": "🎨",
-      "date": "2026-03-31",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "geofy-product-intro",
-      "category": "projects",
-      "title": "Geoify — 让你的 Shopify 店铺被 AI 搜索引擎看见",
-      "description": "Shopify GEO 优化插件产品说明 · AI 驱动的结构化数据优化 + LLMs.txt 生成",
-      "file": "docs/projects/geofy-product-intro.md",
-      "icon": "🔍",
-      "date": "2026-04-01",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-index",
-      "category": "projects",
-      "title": "iWish × Beansmile：AI 时代跨境电商产品合作方案",
-      "description": "合作背景 · 市场分析 · 三层产品战略（工具集→AdPilot→OpsGenie）",
-      "file": "docs/projects/iwish-ai-proposal-index.md",
-      "password": "beansmile",
-      "icon": "📋",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-1",
-      "category": "projects",
-      "title": "方案一：AI 工具集 — 跨境电商 AI 工具箱",
-      "description": "10 个 AI 工具 · 广告生成/Feeds优化/申诉信/博客/选品等 · 快速上线验证",
-      "file": "docs/projects/iwish-ai-proposal-1.md",
-      "password": "beansmile",
-      "icon": "🧰",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-2",
-      "category": "projects",
-      "title": "方案二：AdPilot — AI 广告投放优化工具",
-      "description": "AI 素材生成 + 智能出价 + 跨平台归因 · 面向自主投放的跨境卖家",
-      "file": "docs/projects/iwish-ai-proposal-2.md",
-      "password": "beansmile",
-      "icon": "🎯",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-ai-proposal-3",
-      "category": "projects",
-      "title": "方案三：OpsGenie — AI 运营决策中台",
-      "description": "跨平台数据融合 + 每日 AI 运营建议 + 预测引擎 · 跨境电商的 AI 首席运营官",
-      "file": "docs/projects/iwish-ai-proposal-3.md",
-      "password": "beansmile",
-      "icon": "🧠",
-      "date": "2026-04-02",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-monica-ai-site-assistant",
-      "category": "projects",
-      "title": "AI 建站助手产品方案 — iWish × Monica 合作落地",
-      "description": "基于 Monica AI 的标准化建站产品 · 1周交付 · 价格降低80% · 多语言内容生成",
-      "file": "docs/projects/iwish-monica-ai-site-assistant.md",
-      "password": "beansmile",
-      "icon": "🚀",
-      "date": "2026-04-07",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "iwish-monica-shopify-implementation",
-      "category": "projects",
-      "title": "Shopify + Monica AI 实现方案 — 专注 Shopify 的 AI 增强",
-      "description": "Monica 在 Shopify 建站与运营中的具体应用 · 技术实现细节 · 实施路线图",
-      "file": "docs/projects/iwish-monica-shopify-implementation.md",
-      "password": "beansmile",
-      "icon": "🛍️",
-      "date": "2026-04-07",
-      "author": "Lisa (PM)"
-    },
-    {
-      "slug": "mothers-day-skincare-google-ads-strategy-outline",
-      "category": "projects",
-      "title": "母亲节护肤礼盒 Google Ads 投放策略大纲",
-      "description": "母亲节护肤礼盒促销活动的完整Google Ads策略框架和执行指南",
-      "file": "docs/projects/mothers-day-skincare-google-ads-strategy-outline.md",
-      "password": "beansmile",
-      "icon": "🎯",
-      "date": "2026-04-09",
-      "author": "Google Ads Orchestrator"
-    },
-    {
-      "slug": "mothers-day-skincare-google-ads-full-strategy",
-      "category": "projects",
-      "title": "母亲节护肤礼盒 Google Ads 完整投放策略",
-      "description": "10部分全面策略：目标受众、关键词、广告创意、出价策略、预算分配等",
-      "file": "docs/projects/mothers-day-skincare-google-ads-full-strategy.md",
-      "password": "beansmile",
-      "icon": "📋",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-google-ads-executive-summary",
-      "category": "projects",
-      "title": "母亲节护肤礼盒 Google Ads 策略执行摘要",
-      "description": "快速查看版：核心数据概览、三阶段投放策略、关键要点",
-      "file": "docs/projects/mothers-day-skincare-google-ads-executive-summary.md",
-      "password": "beansmile",
-      "icon": "📊",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-keyword-list",
-      "category": "projects",
-      "title": "母亲节护肤礼盒关键词列表",
-      "description": "50+具体关键词，包含匹配类型和出价建议，可直接导入Google Ads",
-      "file": "docs/projects/mothers-day-skincare-keyword-list.csv",
-      "password": "beansmile",
-      "icon": "🔑",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "mothers-day-skincare-budget-allocation",
-      "category": "projects",
-      "title": "母亲节护肤礼盒预算分配详细表",
-      "description": "按时间阶段、广告类型、受众的详细分配，周度和日度预算规划",
-      "file": "docs/projects/mothers-day-skincare-budget-allocation.md",
-      "password": "beansmile",
-      "icon": "💰",
-      "date": "2026-04-09",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "childrens-day-balance-bike-google-ads-strategy",
-      "category": "projects",
-      "title": "儿童节平衡车Google Ads投放方案",
-      "description": "$20,000预算，3倍ROAS目标，完整三阶段策略",
-      "file": "docs/projects/儿童节平衡车Google Ads投放方案.md",
-      "icon": "🎯",
-      "date": "2026-04-10",
-      "author": "Google Ads Strategy Agent"
-    },
-    {
-      "slug": "iwish-agent-technical-boundary",
-      "category": "projects",
-      "title": "iwish Agent 技术路线与系统边界方案",
-      "description": "基于 iwish-server 建设 IwishAgent Rails Engine 的技术路线、系统边界与演进方案",
-      "file": "docs/projects/iwish-agent-技术路线与系统边界方案.md",
-      "password": "beansmile",
-      "icon": "🧭",
-      "date": "2026-04-22",
-      "author": "Codex"
-    },
-    {
-      "slug": "iwish-agent-admin-chatbox",
-      "category": "projects",
-      "title": "iwish Agent Admin 工作台与 Chatbox 交互方案",
-      "description": "Agent 工作台、Chatbox、Task Draft、Review Queue 与 Artifacts 的 Admin 交互设计",
-      "file": "docs/projects/iwish-agent-admin-工作台与-chatbox-交互方案.md",
-      "password": "beansmile",
-      "icon": "💬",
-      "date": "2026-04-22",
-      "author": "Codex"
+      "author": "PawPrint Team"
     }
   ]
 }
