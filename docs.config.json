@@ -235,6 +235,28 @@
       "icon": "🎯",
       "date": "2026-04-10",
       "author": "Google Ads Strategy Agent"
+    },
+    {
+      "slug": "iwish-agent-technical-boundary",
+      "category": "projects",
+      "title": "iwish Agent 技术路线与系统边界方案",
+      "description": "基于 iwish-server 建设 IwishAgent Rails Engine 的技术路线、系统边界与演进方案",
+      "file": "docs/projects/iwish-agent-技术路线与系统边界方案.md",
+      "password": "beansmile",
+      "icon": "🧭",
+      "date": "2026-04-22",
+      "author": "Codex"
+    },
+    {
+      "slug": "iwish-agent-admin-chatbox",
+      "category": "projects",
+      "title": "iwish Agent Admin 工作台与 Chatbox 交互方案",
+      "description": "Agent 工作台、Chatbox、Task Draft、Review Queue 与 Artifacts 的 Admin 交互设计",
+      "file": "docs/projects/iwish-agent-admin-工作台与-chatbox-交互方案.md",
+      "password": "beansmile",
+      "icon": "💬",
+      "date": "2026-04-22",
+      "author": "Codex"
     }
   ]
 }
